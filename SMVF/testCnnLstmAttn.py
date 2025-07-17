@@ -6,8 +6,6 @@ from sklearn.preprocessing import StandardScaler
 from keras.saving import register_keras_serializable
 import tensorflow.keras.backend as K # type: ignore
 import joblib
-
-# Base directory for model and scaler files
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 @register_keras_serializable()
@@ -18,15 +16,11 @@ MODEL_PATH = os.path.join(BASE_DIR, 'cnn_lstm_attention_volatility.keras')
 SCALER_PATH = os.path.join(BASE_DIR, 'cnnLstmAttenScaler.pkl')
 WINDOW_SIZE = 20
 TARGET = 'realized_volatility'
-
-# Load model and scaler lazily to avoid import-time errors
 scaler = None
 model = None
 
 def predict_next_hour_volatility(ticker, dataset_csv):
     global scaler, model
-    
-    # Load model and scaler if not already loaded
     if scaler is None:
         try:
             scaler = joblib.load(SCALER_PATH)

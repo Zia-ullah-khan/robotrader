@@ -1,13 +1,13 @@
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
-from tensorflow.keras.models import Model
-from tensorflow.keras.layers import Input, Conv1D, LSTM, Dense, Dropout, Multiply, Flatten
-from tensorflow.keras.optimizers import Adam
-from tensorflow.keras.callbacks import EarlyStopping
+import matplotlib.pyplot as plt # type: ignore
+from tensorflow.keras.models import Model # type: ignore
+from tensorflow.keras.layers import Input, Conv1D, LSTM, Dense, Dropout, Multiply, Flatten # type: ignore
+from tensorflow.keras.optimizers import Adam # type: ignore
+from tensorflow.keras.callbacks import EarlyStopping # type: ignore
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
-import tensorflow.keras.backend as K
+import tensorflow.keras.backend as K # type: ignore
 from keras.saving import register_keras_serializable
 import joblib
 
