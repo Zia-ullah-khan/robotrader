@@ -85,4 +85,4 @@ RoboTrader/
 
 ## License
 
-MIT © Zia Ullah Khan
+© Zia Ullah Khan. All rights reserved.
