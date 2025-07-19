@@ -70,7 +70,8 @@ def process_stock(symbol, account_info, start_date, end_date, demo_mode=False):
         order_id = None
         if not demo_mode:
             try:
-                order_id = place_order(**trade_data)
+                #order_id = place_order(**trade_data)
+                print("place order")
             except Exception as e:
                 print(f"Error placing order for {symbol}: {e}")
         

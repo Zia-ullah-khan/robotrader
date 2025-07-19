@@ -12,7 +12,7 @@ def process_stock(symbol, account_info, start_date, end_date):
         print(f"\n=== Processing {symbol} ===")
         data = generate_dataset([symbol], start_date, end_date)
         volatility = predict_next_hour_volatility(symbol, f'datasets/{symbol}_dataset.csv')
-        prompt = f"Based on the current market conditions and the predicted volatility, what would be a good trading strategy for {symbol}? return a JSON object with 'action' (buy/sell/hold), 'reason', 'amount' (number of shares, not dollar amount), 'notion', 'type' (market, limit, stop, stop_limit, trailing_stop), 'time_in_force' (day, gtc, opg, cls, ioc, fok). Take into account the current account status and available balance. Make sure the number of shares * current stock price doesn't exceed the available balance. Consider the stock's typical price range when suggesting share amounts."
+        prompt = f"Based on the current market conditions and the predicted volatility, what would be a good trading strategy for {symbol}? return a JSON object with 'action' (buy/sell/hold), 'reason', 'amount' (number of shares, not dollar amount), 'notion', 'type' (market, limit, stop, stop_limit, trailing_stop), 'time_in_force' (day, gtc, opg, cls, ioc, fok). Take into account the current account status and available balance. Make sure the number of shares * current stock price doesn't exceed the available balance. Consider the stock's typical price range when suggesting share amounts. Take into account the current portfolio of the user and make decisions based on that."
         stock_data = {symbol: volatility, "data": data}
         response = llm(account_info, stock_data, prompt, volatility)
         try:
@@ -46,7 +46,7 @@ def process_stock(symbol, account_info, start_date, end_date):
     
         print(f"Trade decision for {symbol}: {response_dict.get('action', 'hold')} {response_dict.get('amount', 0)} shares") # type: ignore
         print(f"Reason: {response_dict.get('reason', 'No reason provided')}") # type: ignore
-        #place_order(**trade_data)
+        place_order(**trade_data)
         
         return {
             "symbol": symbol,
