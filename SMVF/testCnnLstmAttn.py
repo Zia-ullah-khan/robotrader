@@ -54,3 +54,5 @@ def predict_next_hour_volatility(ticker, dataset_csv):
     X_input = np.expand_dims(X_input, axis=0)
     predicted_volatility = model.predict(X_input).ravel()[0]
     return predicted_volatility
+volatility = predict_next_hour_volatility('AAPL', 'C:\\Projects\\RoboTrader\\UI\\datasets\\AAPL_dataset.csv')
+print(f"Predicted volatility for AAPL: {volatility}")

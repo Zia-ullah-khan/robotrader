@@ -32,3 +32,16 @@ def get_account_info():
         "is_up": is_up,
         "status": account.status
     }
+def get_portfolio_history(timeframe='1D', period='1M'):
+    try:
+        history = api.get_portfolio_history(timeframe=timeframe, period=period)
+        return {
+            'timestamp': history.timestamp,
+            'equity': history.equity,
+            'profit_loss': history.profit_loss,
+            'base_value': history.base_value,
+            'timeframe': history.timeframe
+        }
+    except Exception as e:
+        print(f"Error fetching portfolio history: {e}")
+        return None

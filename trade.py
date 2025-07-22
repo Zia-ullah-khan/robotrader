@@ -1,3 +1,4 @@
+
 from alpaca_trade_api import REST
 import os
 from dotenv import load_dotenv
@@ -36,3 +37,27 @@ def place_order(symbol, qty, side, order_type, time_in_force):
     except Exception as e:
         print(f"Error placing order: {e}")
         return None
+
+
+def get_previous_transactions(limit=20):
+    """Fetch previous orders from Alpaca account."""
+    try:
+        orders = api.list_orders(status='all', limit=limit)
+        order_list = []
+        for order in orders:
+            order_list.append({
+                'id': order.id,
+                'symbol': order.symbol,
+                'qty': order.qty,
+                'side': order.side,
+                'type': order.type,
+                'time_in_force': order.time_in_force,
+                'status': order.status,
+                'filled_at': str(order.filled_at),
+                'submitted_at': str(order.submitted_at),
+                'filled_qty': getattr(order, 'filled_qty', None)
+            })
+        return order_list
+    except Exception as e:
+        print(f"Error fetching previous transactions: {e}")
+        return []
