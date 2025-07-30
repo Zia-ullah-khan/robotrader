@@ -100,8 +100,6 @@ dmypy.json
 # Data files
 datasets/
 UI/datasets/
-SMVF/*.keras
-SMVF/*.pkl
 
 # Logs
 *.log
