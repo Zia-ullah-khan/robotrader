@@ -61,7 +61,7 @@ def process_stock(symbol, account_info, start_date, end_date):
     
         print(f"Trade decision for {symbol}: {response_dict.get('action', 'hold')} {response_dict.get('amount', 0)} shares") # type: ignore
         print(f"Reason: {response_dict.get('reason', 'No reason provided')}") # type: ignore
-        #place_order(**trade_data)
+        place_order(**trade_data)
         
         return {
             "symbol": symbol,
