@@ -3,3 +3,5 @@ numpy
 yfinance
 pandas-ta
 scikit-learn
+alpaca-trade-api
+python-dotenv
