@@ -52,6 +52,12 @@ def calculate_technical_indicators(data):
     data.ta.atr(append=True)
     data.ta.bbands(append=True)
     data.ta.stoch(append=True)
+    data.ta.adx(append=True)
+    data.ta.obv(append=True)
+    data.ta.sma(length=20, append=True)
+    data.ta.sma(length=50, append=True)
+    data.ta.ema(length=20, append=True)
+    data.ta.ema(length=50, append=True)
     data.dropna(inplace=True)
     return data
 
@@ -116,7 +122,7 @@ def generate_dataset(TICKERS, START_DATE, END_DATE):
             file_name = os.path.join("datasets", f"{ticker.replace('^','')}_dataset.csv")
             processed_data.to_csv(file_name)
             print(f"Dataset for {ticker} saved to {file_name}")
-            return raw_data
+            return processed_data
         except Exception as e:
             print(f"Failed to process {ticker}: {e}")
             continue

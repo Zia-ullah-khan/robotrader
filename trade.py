@@ -10,7 +10,7 @@ BASE_URL = os.getenv('APCA_API_BASE_URL', 'https://paper-api.alpaca.markets')
 
 api = REST(API_KEY, API_SECRET, BASE_URL) # type: ignore
 
-def place_order(symbol, qty, side, order_type, time_in_force):
+def place_order(symbol, qty, side, order_type, time_in_force, limit_price=None, stop_price=None):
     """Place an order with Alpaca."""
     try:
         side = side.lower()
@@ -25,13 +25,20 @@ def place_order(symbol, qty, side, order_type, time_in_force):
             print(f"Skipping order: Invalid quantity {qty}")
             return None
             
-        order = api.submit_order(
-            symbol=symbol,
-            qty=qty,
-            side=side,
-            type=order_type,
-            time_in_force=time_in_force
-        )
+        order_data = {
+            "symbol": symbol,
+            "qty": qty,
+            "side": side,
+            "type": order_type,
+            "time_in_force": time_in_force
+        }
+        
+        if order_type == 'limit' and limit_price is not None:
+            order_data['limit_price'] = limit_price
+        if order_type in ['stop', 'stop_limit'] and stop_price is not None:
+            order_data['stop_price'] = stop_price
+            
+        order = api.submit_order(**order_data)
         print(f"Order placed: {order.id}") # type: ignore
         return order.id # type: ignore
     except Exception as e:

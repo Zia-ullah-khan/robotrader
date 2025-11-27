@@ -2,7 +2,7 @@ from getAccountInfo import get_account_info
 from LLM import llm
 from SMVF.dataset import generate_dataset
 from datetime import datetime
-from SMVF.testCnnLstmAttn import predict_next_hour_volatility
+from SMVF.predict import predict_next_hour_volatility
 from trade import place_order
 import json
 from utils import get_top_performing_stocks, get_latest_indicators
@@ -26,7 +26,7 @@ def process_stock(symbol, account_info, start_date, end_date):
         except Exception as e:
             print(f"[ERROR] predict_next_hour_volatility failed for {symbol}: {e}")
             volatility = None
-        prompt = f"Based on the current market conditions and the predicted volatility, what would be a good trading strategy for {symbol}? return a JSON object with 'action' (buy/sell/hold), 'reason', 'amount' (number of shares, not dollar amount), 'notion', 'type' (market, limit, stop, stop_limit, trailing_stop), 'time_in_force' (day, gtc, opg, cls, ioc, fok). Take into account the current account status and available balance. Make sure the number of shares * current stock price doesn't exceed the available balance. Consider the stock's typical price range when suggesting share amounts. Take into account the current portfolio of the user and make decisions based on that."
+        prompt = f"Based on the current market conditions and the predicted volatility, what would be a good trading strategy for {symbol}? return a JSON object with 'action' (buy/sell/hold), 'reason', 'amount' (number of shares, not dollar amount), 'notion', 'type' (market, limit, stop, stop_limit, trailing_stop), 'time_in_force' (day, gtc, opg, cls, ioc, fok). If the order type is 'limit', you must provide a 'limit_price'. If the order type is 'stop' or 'stop_limit', you must provide a 'stop_price'. Take into account the current account status and available balance. Make sure the number of shares * current stock price doesn't exceed the available balance. Consider the stock's typical price range when suggesting share amounts. Take into account the current portfolio of the user and make decisions based on that."
         stock_data = {
             "symbol": symbol,
             "predicted_volatility": volatility,
@@ -61,14 +61,28 @@ def process_stock(symbol, account_info, start_date, end_date):
             }
         trade_data = {
             "symbol": symbol,
-            "qty": response_dict.get("amount", 0), # type: ignore
-            "side": response_dict.get("action", "hold"), # type: ignore
-            "order_type": response_dict.get("type", "market"), # type: ignore
-            "time_in_force": response_dict.get("time_in_force", "day") # type: ignore
+            "qty": response_dict.get("amount", 0),
+            "side": response_dict.get("action", "hold"),
+            "order_type": response_dict.get("type", "market"),
+            "time_in_force": response_dict.get("time_in_force", "day")
         }
+
+        # Add limit_price or stop_price if applicable
+        order_type = trade_data["order_type"]
+        if order_type == 'limit' and 'limit_price' in response_dict:
+            trade_data['limit_price'] = response_dict['limit_price']
+        elif order_type == 'limit':
+            print("[WARNING] LLM suggested a limit order without a limit_price. Defaulting to market order.")
+            trade_data['order_type'] = 'market'
+        
+        if (order_type == 'stop' or order_type == 'stop_limit') and 'stop_price' in response_dict:
+            trade_data['stop_price'] = response_dict['stop_price']
+        elif order_type == 'stop' or order_type == 'stop_limit':
+            print(f"[WARNING] LLM suggested a {order_type} order without a stop_price. Defaulting to market order.")
+            trade_data['order_type'] = 'market'
     
-        print(f"Trade decision for {symbol}: {response_dict.get('action', 'hold')} {response_dict.get('amount', 0)} shares") # type: ignore
-        print(f"Reason: {response_dict.get('reason', 'No reason provided')}") # type: ignore
+        print(f"Trade decision for {symbol}: {response_dict.get('action', 'hold')} {response_dict.get('amount', 0)} shares")
+        print(f"Reason: {response_dict.get('reason', 'No reason provided')}")
         place_order(**trade_data)
         
         return {
@@ -92,7 +106,7 @@ def process_stock(symbol, account_info, start_date, end_date):
 
 if __name__ == "__main__":
     print("Fetching top performing stocks...")
-    STOCKS = get_top_performing_stocks(num_stocks=10, interval_minutes=10)
+    STOCKS = get_top_performing_stocks(num_stocks=50, interval_minutes=10)
     if not STOCKS:
         print("No stocks to process. Market might be closed or no performing stocks found.")
         exit()

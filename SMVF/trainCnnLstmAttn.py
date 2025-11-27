@@ -10,8 +10,20 @@ from sklearn.preprocessing import StandardScaler
 import tensorflow.keras.backend as K # type: ignore
 from keras.saving import register_keras_serializable
 import joblib
+import os
+from dataset import generate_dataset
+from datetime import datetime
 
-DATA_PATH = 'datasets/GSPC_dataset.csv'
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_PATH = os.path.join(BASE_DIR, '..', 'datasets', 'GSPC_dataset.csv')
+
+if not os.path.exists(DATA_PATH):
+    print(f"Dataset not found at {DATA_PATH}, generating...")
+    start_date = "2010-01-01"
+    end_date = datetime.now().strftime("%Y-%m-%d")
+    generate_dataset(['^GSPC'], start_date, end_date)
+    print("Dataset generated.")
+
 WINDOW_SIZE = 20
 BATCH_SIZE = 64
 EPOCHS = 100
@@ -25,16 +37,18 @@ if 'Date' in df.columns:
 if '' in df.columns:
     df = df.drop(columns=[''])
 
+df.columns = df.columns.str.replace(r'_5_2\.0_2\.0', '_5_2.0', regex=True)
+df.columns = df.columns.str.replace(r'STOCHh_14_3_3', 'STOCHk_14_3_3', regex=True)
+
 scaler = StandardScaler()
 feature_cols = [col for col in df.columns if col != TARGET]
 df[feature_cols] = scaler.fit_transform(df[feature_cols])
-joblib.dump(scaler, './cnnLstmAtten/cnnLstmAttenScaler.pkl')
-print("Scaler saved as cnnLstmAttenScaler.pkl")
 
 def create_rolling_windows(data, window_size, target_col):
     X, y = [], []
+    feature_cols = [col for col in data.columns if col != target_col]
     for i in range(len(data) - window_size):
-        X.append(data.iloc[i:i+window_size].values)
+        X.append(data[feature_cols].iloc[i:i+window_size].values)
         y.append(data.iloc[i+window_size][target_col])
     return np.array(X), np.array(y)
 
@@ -84,7 +98,7 @@ history = model.fit(
     callbacks=callbacks
 )
 
-model.save('./cnnLstmAtten/cnn_lstm_attention_volatility.keras')
+model.save(os.path.join(BASE_DIR, 'cnn_lstm_attention_volatility.keras'))
 print('Training complete. Model saved as cnn_lstm_attention_volatility.keras')
 
 plt.plot(history.history['loss'], label='Train Loss')
