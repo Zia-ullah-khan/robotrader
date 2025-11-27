@@ -5,11 +5,15 @@ from datetime import datetime
 from SMVF.testCnnLstmAttn import predict_next_hour_volatility
 from trade import place_order
 import json
+from utils import get_top_performing_stocks, get_latest_indicators
 
 def process_stock(symbol, account_info, start_date, end_date):
     """Process a single stock through the complete pipeline."""
     try:
         print(f"\n=== Processing {symbol} ===")
+        
+        latest_indicators = get_latest_indicators(symbol)
+        
         try:
             data = generate_dataset([symbol], start_date, end_date)
             print(f"[DEBUG] Dataset generated for {symbol}: {type(data)}")
@@ -23,7 +27,11 @@ def process_stock(symbol, account_info, start_date, end_date):
             print(f"[ERROR] predict_next_hour_volatility failed for {symbol}: {e}")
             volatility = None
         prompt = f"Based on the current market conditions and the predicted volatility, what would be a good trading strategy for {symbol}? return a JSON object with 'action' (buy/sell/hold), 'reason', 'amount' (number of shares, not dollar amount), 'notion', 'type' (market, limit, stop, stop_limit, trailing_stop), 'time_in_force' (day, gtc, opg, cls, ioc, fok). Take into account the current account status and available balance. Make sure the number of shares * current stock price doesn't exceed the available balance. Consider the stock's typical price range when suggesting share amounts. Take into account the current portfolio of the user and make decisions based on that."
-        stock_data = {symbol: volatility, "data": data}
+        stock_data = {
+            "symbol": symbol,
+            "predicted_volatility": volatility,
+            "latest_indicators": latest_indicators
+        }
         try:
             response = llm(account_info, stock_data, prompt, volatility)
             print(f"[DEBUG] LLM response for {symbol}: {response}")
@@ -83,7 +91,12 @@ def process_stock(symbol, account_info, start_date, end_date):
         }
 
 if __name__ == "__main__":
-    STOCKS = ["AAPL", "GOOGL", "MSFT", "TSLA", "AMZN"]
+    print("Fetching top performing stocks...")
+    STOCKS = get_top_performing_stocks(num_stocks=10, interval_minutes=10)
+    if not STOCKS:
+        print("No stocks to process. Market might be closed or no performing stocks found.")
+        exit()
+
     start_date = "2020-01-01"
     end_date = datetime.now().strftime("%Y-%m-%d")
     account_info = get_account_info()

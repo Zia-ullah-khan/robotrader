@@ -4,6 +4,7 @@ import uuid
 import json
 from main import process_stock
 from getAccountInfo import get_account_info
+from utils import get_top_performing_stocks
 
 SOCKETIO_SERVER_URL = 'http://localhost:5000'
 
@@ -35,13 +36,20 @@ def send_trade_decisions(results):
     print('Sent trade decisions:', json.dumps(payload, indent=2))
 
 def main_loop():
-    STOCKS = ["AAPL", "GOOGL", "MSFT", "TSLA", "AMZN"]
     start_date = "2020-01-01"
     from datetime import datetime
     while True:
+        print("Fetching top 10 performing stocks in the last 10 minutes...")
+        STOCKS = get_top_performing_stocks(num_stocks=10, interval_minutes=10)
+        if not STOCKS:
+            print("No stocks found. Waiting for next interval.")
+            time.sleep(600)
+            continue
+
         end_date = datetime.now().strftime("%Y-%m-%d")
         account_info = get_account_info()
         results = []
+        print(f"Processing {len(STOCKS)} stocks: {', '.join(STOCKS)}")
         for stock in STOCKS:
             result = process_stock(stock, account_info, start_date, end_date)
             results.append(result)
