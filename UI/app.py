@@ -1,18 +1,13 @@
-from flask import Flask, render_template, request, jsonify, session
+from flask import Flask, render_template, jsonify
 import os
 import sys
 import json
 from datetime import datetime
-import threading
-import time
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from getAccountInfo import get_account_info
-from LLM import llm
-from SMVF.dataset import generate_dataset
-from SMVF.testCnnLstmAttn import predict_next_hour_volatility
-from trade import place_order
+from getAccountInfo import get_account_info, get_portfolio_history as get_alpaca_history
+from trade import get_previous_transactions
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -20,168 +15,218 @@ load_dotenv()
 app = Flask(__name__)
 app.secret_key = 'hehehe'
 
-processing_status = {
-    'is_running': False,
-    'current_stock': '',
-    'progress': 0,
-    'results': [],
-    'total_stocks': 0,
-    'errors': []
-}
+# Path to the trade history JSON file
+TRADE_HISTORY_FILE = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'trade_history.json')
 
-def process_stock(symbol, account_info, start_date, end_date, demo_mode=False):
-    """Process a single stock through the complete pipeline."""
-    try:
-        print(f"\n=== Processing {symbol} ===")
-        processing_status['current_stock'] = symbol
-        data = generate_dataset([symbol], start_date, end_date)
-        volatility = predict_next_hour_volatility(symbol, f'datasets/{symbol}_dataset.csv')
-        volatility = float(volatility) if volatility is not None else None
-        prompt = f"Based on the current market conditions and the predicted volatility, what would be a good trading strategy for {symbol}? return a JSON object with 'action' (buy/sell/hold), 'reason', 'amount' (number of shares, not dollar amount), 'notion', 'type' (market, limit, stop, stop_limit, trailing_stop), 'time_in_force' (day, gtc, opg, cls, ioc, fok). Take into account the current account status and available balance. Make sure the number of shares * current stock price doesn't exceed the available balance. Consider the stock's typical price range when suggesting share amounts."
-        stock_data = {symbol: volatility, "data": data}
-        response = llm(account_info, stock_data, prompt, volatility)
+def load_trade_history():
+    """Load trade history from JSON file."""
+    if os.path.exists(TRADE_HISTORY_FILE):
         try:
-            if isinstance(response, str):
-                start = response.find('{')
-                end = response.rfind('}') + 1
-                if start != -1 and end > start:
-                    json_str = response[start:end]
-                    response_dict = json.loads(json_str)
-                else:
-                    raise json.JSONDecodeError("No JSON object found", response, 0)
-            else:
-                response_dict = response
-        except json.JSONDecodeError as e:
-            print(f"Error parsing LLM response for {symbol}: {e}")
-            response_dict = {
-                "action": "hold",
-                "amount": 0,
-                "type": "market",
-                "time_in_force": "day",
-                "reason": "Failed to parse LLM response"
-            }
-        trade_data = {
-            "symbol": symbol,
-            "qty": response_dict.get("amount", 0), # type: ignore
-            "side": response_dict.get("action", "hold"), # type: ignore
-            "order_type": response_dict.get("type", "market"), # type: ignore
-            "time_in_force": response_dict.get("time_in_force", "day") # type: ignore
-        }
-        order_id = None
-        if not demo_mode:
-            try:
-                #order_id = place_order(**trade_data)
-                print("place order")
-            except Exception as e:
-                print(f"Error placing order for {symbol}: {e}")
-        
-        return {
-            "symbol": symbol,
-            "volatility": volatility,
-            "decision": response_dict,
-            "trade_data": trade_data,
-            "order_id": order_id,
-            "success": True
-        }
-        
-    except Exception as e:
-        print(f"Error processing {symbol}: {e}")
-        processing_status['errors'].append(f"Error processing {symbol}: {str(e)}")
-        return {
-            "symbol": symbol,
-            "volatility": None,
-            "decision": None,
-            "trade_data": None,
-            "order_id": None,
-            "success": False,
-            "error": str(e)
-        }
+            with open(TRADE_HISTORY_FILE, 'r') as f:
+                return json.load(f)
+        except (json.JSONDecodeError, IOError):
+            return []
+    return []
 
-def run_trading_pipeline(stocks, start_date, end_date, demo_mode=False):
-    """Run the trading pipeline for multiple stocks."""
-    global processing_status
-    
-    processing_status['is_running'] = True
-    processing_status['current_stock'] = ''
-    processing_status['progress'] = 0
-    processing_status['results'] = []
-    processing_status['total_stocks'] = len(stocks)
-    processing_status['errors'] = []
-    
+def get_portfolio_history():
+    """Get portfolio value history from Alpaca API."""
     try:
-        account_info = get_account_info()
-        results = []
-        for i, stock in enumerate(stocks):
-            if not processing_status['is_running']:
-                break
-            result = process_stock(stock, account_info, start_date, end_date, demo_mode)
-            results.append(result)
-            if isinstance(result.get('volatility'), (bytes,)):
-                result['volatility'] = None
-            processing_status['results'].append(result)
-            processing_status['progress'] = int(((i + 1) / len(stocks)) * 100)
-            time.sleep(1)
+        # Fetch 1 month of daily history
+        history = get_alpaca_history(timeframe='1D', period='1M')
+        if not history:
+            return []
+            
+        portfolio_data = []
+        timestamps = history['timestamp']
+        equities = history['equity']
         
-        processing_status['is_running'] = False
-        processing_status['current_stock'] = 'Complete'
+        # Combine timestamps and equity values
+        for ts, eq in zip(timestamps, equities):
+            if eq is not None:  # Filter out None values
+                portfolio_data.append({
+                    'timestamp': ts,  # Alpaca returns unix timestamp
+                    'equity': float(eq),
+                    'cash': 0  # Alpaca history doesn't give historical cash easily, so we'll omit or fetch differently if needed
+                })
         
+        return portfolio_data
     except Exception as e:
-        processing_status['is_running'] = False
-        processing_status['errors'].append(f"Pipeline error: {str(e)}")
-        processing_status['current_stock'] = 'Error'
+        print(f"Error getting portfolio history: {e}")
+        return []
 
 @app.route('/')
 def index():
-    """Main page with trading interface."""
-    api_key = os.getenv('ALPACA_API_KEY', '')
-    api_secret = os.getenv('ALPACA_API_SECRET', '')
-    base_url = os.getenv('APCA_API_BASE_URL', 'https://paper-api.alpaca.markets')
-    
-    return render_template('index.html', 
-                         api_key_masked='*' * (len(api_key) - 4) + api_key[-4:] if api_key else '',
-                         base_url=base_url)
+    """Main dashboard page."""
+    return render_template('index.html')
 
-@app.route('/start_trading', methods=['POST'])
-def start_trading():
-    """Start the trading pipeline."""
-    if processing_status['is_running']:
-        return jsonify({'error': 'Trading pipeline is already running'}), 400
-    stocks_input = request.form.get('stocks', '').strip()
-    start_date = request.form.get('start_date', '2020-01-01')
-    end_date = request.form.get('end_date', datetime.now().strftime("%Y-%m-%d"))
-    demo_mode = request.form.get('demo_mode') == 'on'
-    if not stocks_input:
-        return jsonify({'error': 'Please enter at least one stock symbol'}), 400
-    
-    stocks = [stock.strip().upper() for stock in stocks_input.split(',') if stock.strip()]
-    
-    if not stocks:
-        return jsonify({'error': 'Please enter valid stock symbols'}), 400
-    thread = threading.Thread(target=run_trading_pipeline, args=(stocks, start_date, end_date, demo_mode))
-    thread.daemon = True
-    thread.start()
-    
-    return jsonify({'message': 'Trading pipeline started', 'stocks': stocks})
+@app.route('/api/account')
+def get_account():
+    """Get current account information."""
+    try:
+        account_info = get_account_info()
+        return jsonify({
+            'success': True,
+            'data': account_info
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        })
 
-@app.route('/stop_trading', methods=['POST'])
-def stop_trading():
-    """Stop the trading pipeline."""
-    processing_status['is_running'] = False
-    return jsonify({'message': 'Trading pipeline stopped'})
+@app.route('/api/trades')
+def get_trades():
+    """Get trade history."""
+    try:
+        history = load_trade_history()
+        # Return most recent first
+        return jsonify({
+            'success': True,
+            'data': list(reversed(history[-100:]))  # Last 100 trades
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        })
 
-@app.route('/status')
-def get_status():
-    """Get current processing status."""
-    return jsonify(processing_status)
+@app.route('/api/portfolio-history')
+def get_portfolio_history_api():
+    """Get portfolio value history for charting."""
+    try:
+        data = get_portfolio_history()
+        return jsonify({
+            'success': True,
+            'data': data
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        })
 
-@app.route('/results')
-def get_results():
-    """Get detailed results."""
-    return jsonify({
-        'results': processing_status['results'],
-        'errors': processing_status['errors'],
-        'is_complete': not processing_status['is_running'] and processing_status['current_stock'] in ['Complete', 'Error']
-    })
+@app.route('/api/recent-orders')
+def get_recent_orders():
+    """Get recent orders from Alpaca."""
+    try:
+        orders = get_previous_transactions(limit=20)
+        return jsonify({
+            'success': True,
+            'data': orders
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        })
+
+@app.route('/api/stats')
+def get_stats():
+    """Get trading statistics."""
+    try:
+        history = load_trade_history()
+        
+        total_trades = len(history)
+        successful_trades = sum(1 for t in history if t.get('success', False))
+        
+        buy_count = sum(1 for t in history if t.get('decision', {}).get('action') == 'buy')
+        sell_count = sum(1 for t in history if t.get('decision', {}).get('action') == 'sell')
+        hold_count = sum(1 for t in history if t.get('decision', {}).get('action') == 'hold')
+        
+        # Get unique symbols traded
+        symbols = set(t.get('symbol') for t in history if t.get('symbol'))
+        
+        return jsonify({
+            'success': True,
+            'data': {
+                'total_trades': total_trades,
+                'successful_trades': successful_trades,
+                'failed_trades': total_trades - successful_trades,
+                'buy_count': buy_count,
+                'sell_count': sell_count,
+                'hold_count': hold_count,
+                'unique_symbols': len(symbols),
+                'symbols_list': list(symbols)
+            }
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        })
+
+# Path to pipeline status file
+PIPELINE_STATUS_FILE = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'pipeline_status.json')
+
+@app.route('/api/pipeline-status')
+def get_pipeline_status():
+    """Get current pipeline processing status."""
+    try:
+        if os.path.exists(PIPELINE_STATUS_FILE):
+            with open(PIPELINE_STATUS_FILE, 'r') as f:
+                status = json.load(f)
+            return jsonify({
+                'success': True,
+                'data': status
+            })
+        else:
+            return jsonify({
+                'success': True,
+                'data': {
+                    'status': 'idle',
+                    'message': 'Pipeline not running',
+                    'current_stock': None,
+                    'progress': 0,
+                    'total_stocks': 0,
+                    'completed_stocks': []
+                }
+            })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        })
+
+@app.route('/api/export-training-data')
+def export_training_data():
+    """Export trade history in a format suitable for ML training."""
+    try:
+        history = load_trade_history()
+        return jsonify({
+            'success': True,
+            'count': len(history),
+            'data': history
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        })
+
+# Path to scheduler log file
+SCHEDULER_LOG_FILE = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'scheduler_log.json')
+
+@app.route('/api/scheduler-log')
+def get_scheduler_log():
+    """Get scheduler run history."""
+    try:
+        if os.path.exists(SCHEDULER_LOG_FILE):
+            with open(SCHEDULER_LOG_FILE, 'r') as f:
+                log = json.load(f)
+            return jsonify({
+                'success': True,
+                'data': list(reversed(log[-20:]))  # Last 20 runs
+            })
+        else:
+            return jsonify({
+                'success': True,
+                'data': []
+            })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        })
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)

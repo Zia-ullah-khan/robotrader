@@ -1,0 +1,1211 @@
+--- PAGE 1 ---
+ 
+   
+ 
+1 
+ More Than Just Attention: How a Hybrid AI Model Outperforms 
+Traditional Volatility Forecasting Methods  
+Abstract:  COVID -19 has created an environment of more volatility in the stock markets, which indicates 
+the shortcomings of traditional methods such as GARCH, thereby necessitating sophisticated hybrid models 
+capable of handling crisis environments. This study has be en carried out to understand the superiority of 
+the Convolutional Neural Network -LSTM model in forecasting the volatility in stock exchanges relative to 
+traditional models by demonstrating conclusive empirical evidence. To evaluate the superiority of the 
+model, this study uses the hybrid model to forecast stock exchange by using four major stock exchanges: 
+S&P 500 (USA), NASDAQ (USA technology stocks), NIFTY 50 (India), and IDX (Indonesia). These four 
+stock exchanges represent two emerging economies (India and Indonesia) plus one advanced economy 
+(USA), and the data span from January 1, 2018 to December 31, 2024.  The results from our analysis clearly 
+show that although the volatility in the emerging markets is higher than in the advanced economy, in our 
+analysis, it has been clearly established that employing attention mechanisms in forecasting can accurately 
+detect significant factors affecting instability in the markets, precisely during the Covid -19 crisis.  Given the 
+above findings, it is highly recommended that investors and policymakers from both developed and 
+developing markets take into consideration highly sophisticated predictive models that have been endowed 
+with attention mechanisms. It is argued that  such high -end tools result in better volatility forecasts as an 
+anticipatory measure, thus making decision -making processes more informed and making more stable 
+portfolios in an increasingly AI -driven economic.    
+Keywords: Volatility forecasting , stock market,  Covid -19, CNN -LSTM models  
+1. Introduction  
+In the contemporary economic landscape, globalization, markets, and especially finance play an 
+important and dominating position in the development and progress of the national and world 
+economies through the finance and investment in the real sector. Howe ver, despite their strategic 
+position and significant contribution to the national and world economies, these markets are 
+extremely vulnerable to various disturbances happening across the globe (Masoud, 2013; Yang, 
+2025). However, over the last ten years, various occurrences, including the Covid -19 pandemic, 
+have exposed this vulnerability as these occurrences have caused considerable market volatilities 
+globally due to geo -political tensions and raw materials, as well as changes in investment portfolios 
+(e.g., Xu et al., 2024; Ye et al., 2025; Hussain & Islam, 2025). All this, therefore, underlines the 
+situation exemplified by the presence of volatilities that exist in the stock exchange, a situation 
+that can be considered serious.  
+Volatility plays an important role in financial markets and is considered an essential element that 
+predicts the sentiment of investors. It may even emerge to be one of the determinants of risk; 
+
+--- PAGE 2 ---
+ 
+   
+ 
+2 
+ knowing the volatility and forecasting it holds  significant importance in taking decisions by 
+investors. Volatility refers to the capacity of asset prices to fluctuate and is a symbols of 
+uncertainty, risk, and possible return. The process of computation of the value of volatility 
+becomes essential while it is being applied to options pricing models; it has also shown great 
+importance in risk management and market efficiency meas urements. The ever -rising complexities 
+in financial markets alongside changing trends in financial volatilities along with variable 
+sensitivities resulting from various crises or shocks that have arisen from recent pandemics like 
+Covid -19 have compelled nations to create effective models of forecasts (Kim & Won, 2018; Chen 
+et al., 20 22;  Xu et al., 2024).  
+Nevertheless, when financial volatility is being projected, immense challenges remain given its 
+nature, associated with significant levels of noise and switches usually encountered in financial 
+series. Econometric models, even when aesthetically tractable,  cannot easily accommodate the 
+dynamism and complexity of the modern financial system. The difficulty of capturing long -run 
+dependence as well as time -varying market conditions by traditional models built upon the 
+assumptions of stationarity processes and linear dependencies cannot be overemphasized, 
+especially in the processes of complicated issues in the shock of macroeconomic factors, sectorial 
+diversities, and investor anomalies (Amirshahi & Lahmiri, 2023; Hu et al., 2023; Adesina & 
+Obokoh, 2025).  
+Despite classical models, such as GARCH and ARIMA, dominating the current literature in terms 
+of already wide application, they heavily depend upon linear assumptions, failing to account for 
+any latent features that might exist in a dataset, as well as dee p non -linear patterns, due to a lack 
+of ability in generalizing, thus rendering them inoperable in times of market turbulences, where 
+volatility is a standard scenario (Kim & Won, 2018; Koo & Kim, 2022).  They do not yield much 
+adaptability in ever -changing financial scenarios because they must  depend heavily on handcrafted 
+features. The introduction of a deep learning paradigm exemplified by  architectures such as 
+recurrent and convolutional deep learning architectures, effectively capture complex relationships 
+through data -driven representation learning  (Yu & Li, 2018; Christensen et al., 2023 ). 
+While many studies have addressed deep learning (DL) models for price prediction, very few have 
+ventured into volatility forecasting using hybrid  architectures. Among those, most of them 
+examine pre -pandemic datasets or are designed for stable markets, hence leaving a window of 
+
+--- PAGE 3 ---
+ 
+   
+ 
+3 
+ opportunity for performance evaluation under post -COVID, high -volatility, and emerging markets 
+scenarios. Second, existing CNN -LSTM approaches are mostly geared toward price direction or 
+classification problems rather than being able to provide a fine -grained continuous volatility 
+forecast ( Rostamian & O'Hara, 2022 ; Song et al., 2023 ). Another uncharted area relates to 
+integrated attention mechanisms or custom -built volatility features within hybrid models.  
+Therefore, this study puts forth a new hybrid model derived from CNN and LSTM combined with 
+an attention mechanism to bring about a better volatility forecast. CNN is designed to extract 
+spatially aware patterns from multivariate time series containing tec hnical indicators, while LSTM 
+handles the temporal dependencies present across sequences. The attention layer then aids in 
+discerning the importance of certain time steps and indicators at specific moments. In this pipeline, 
+volatility is introduced as a f eature to create both learning stability and sensitivity in the system.  
+Moreover, the model is tested across various market segments, including emerging markets and 
+the post -COVID market. These tests validated the model in diverse financial contexts (Singh et 
+al., 2023; Mohamed Rida et al., 2024). This study also enriches exis ting research on stock market 
+volatility through a comparative analysis of the four major stock market indices, before and after 
+the COVID -19 crisis, in different countries. Two of these indices are from developed countries 
+(the S&P 500 and NASDAQ indices of the United States), while two of them are from emerging 
+Asian markets (the NIFTY 50 index of India and Jakarta Composite Index (IDX) of Indonesia). 
+Incorporating this geographical and structural heterogeneity allows for a more comprehensive 
+analysis of stock market volatility in the face of recent shocks, such as the pandemic and global 
+events. Moreover, the study emphasizes the practical implications of intelligent econometric 
+prediction models; therefore, CNN and LSTM models are also presented.  
+While selecting the markets for the study, two broad and prominent markets out of the developed 
+economies (S&P 500 and NASDAQ) are considered. Furthermore, two markets are considered 
+from the emerging or developing countries: NIFTY 50 and IDX. The reasons for choosing the 
+markets are based on their economic significance. The United States is the biggest capital market 
+in the world. We have considered the markets S&P 500 and NASDAQ. India and Indonesia have 
+been chosen as they are two of the biggest emerging  economies in Asia with high levels of activity. 
+They share strong economic ties with the United States. Their economies also reflect contrasting 
+characteristics; for example, India’s economy is dominated by services as opposed to Indonesia’s 
+
+--- PAGE 4 ---
+ 
+   
+ 
+4 
+ commodity -driven stock exchange. This selection of indices would provide a holistic review of 
+global sentiments with sectoral and emerging -market representations.  
+The significance of this study to existing theory is three -fold. Firstly, it adds to the existing 
+literature through a cross -markets/cross -regime analysis of VForecasts during developed and 
+emerging markets in those uncertain periods of Covid -19 and Russia –Ukraine conflicts. Secondly, 
+it expands upon existing models through the addition of engineered hybrid models that integrate 
+CNN, LSTM, and attention to improve VSpikes prediction findings. Thirdly, it adds to existing 
+theory through extensive tests of it s models to create increased pragmatic implications for 
+uncertain periods.  
+In this paper, the structure is as follows: In section 2, an extensive review of the literature for 
+traditional models, LSTM, CNN, and hybrid deep learning outlines for volatility forecast is 
+presented. Section 3 specifically presents the dataset and the t echnical indicators utilized, just like 
+the feature engineering techniques. On the other hand, section 4 outlines the suggested network 
+architecture of CNN, LSTM, and Attention. Experimental Results, comparison benchmarks and 
+forecasting under different ma rket Regimes will be discussed in section 5. It will be concluded by 
+Section 6, in which we will finalize the paper through the use of key findings, with key findings, 
+financial implications, limitations, and future directions.  
+2. Literature Review  
+2.1 Some Traditional Models for Forecasting Volatility  
+The classical methods, such as the GARCH, SVR, HAR, etc , have been extensively applied to real 
+activity forecasting. GARCH -type models are generally believed to capture volatility clustering 
+and mean reversion in time series. For instance , Kim & Won (2018) created a hybrid model 
+combining GARCH with LSTM, showing that while GARCH is still very good for modeling 
+heteroskedasticity, it tends to fail when trying to model long -term dependencies.  Moreover, in his 
+study, Yang (2025) showed that due to this trade war, market volatility has also been a key factor, 
+as depicted in this study through the results of GARCH, TGARCH, and EGARCH model 
+applications, considering major stock exchanges. The study reveals that along with a sharp increase 
+in shocks, a larger mark et reaction is also depicted due to negative news, considering a sense of 
+greater risk in this scenario. Koo & Kim’s (2022) contribution to this idea was to insert methods 
+
+--- PAGE 5 ---
+ 
+   
+ 
+5 
+ of distribution manipulation into their hybrid GARCH -LSTM architecture, though this was found 
+to be a slight improvement at least for environments that are volatile in nature. Similarly, Hu, Ni, 
+and Wen (2020) combined GARCH with LSTM -ANN architectures to try to provide better 
+forecasts of copper price volatility. All these approaches still depend on well -specified statistical 
+assumptions and may not hold as market conditions ch ange.  
+2.2 Deep Learning Models: CNN and LSTM  
+Deep learning has been put forward as a flexible, stronger alternative to the traditional model for 
+financial forecasting. CNNs were meant for spatial pattern recognition but were adapted to 
+financial usage, where they extract hierarchical features from te mporal sequences. CNNs can 
+capture local dependencies well and denoise time series data (Kanwal et al., 2022). LSTMs, 
+conversely, are useful in modeling sequential data and long -term dependencies and thus are the 
+best option for time -series tasks like vola tility forecasting ( Hochreiter & Schmidhuber, 1996;  Yu 
+& Li, 2018 ; Assaf et al., 2022). The Bi -LSTM variants go on to enhance this by considering both 
+forward and backward processing of the input sequence equally ( Xu et al., 2024 ). 
+2.3 Hybrid CNN -LSTM Architectures  
+Recent developmental contributions to the domain of financial forecasting tend to more 
+prominently underscore the disadvantages associated with the adoption and practice of deep 
+learning methods to address the conjoint demands for complexity and dynamics e armarking the 
+representational space associated with financial models. Accordingly, within the nonlinear 
+financial market environment characterized by constant interconnections and regime switches, the 
+aforementioned disadvantages naturally led to the form ulation of combined models involving the 
+adoption of both the convolution model and the recurrent network with long/short memory model, 
+acknowledged to be a main methodological improvement (Giantsidi & Tarantola, 2025).  
+In this context, the use of CNNs benefits from the automatic detection of higher -level 
+representations from multivariate information, recognizing local patterns and sophisticated 
+correlations between various finance variables. Then, these representations w ill be fed to an LSTM 
+that recognizes the temporal dependencies between variables, interpreting the dynamic patterns 
+within finance through a structured approach, which, linking the use of these two approaches, 
+
+--- PAGE 6 ---
+ 
+   
+ 
+6 
+ shows promise in significantly enhancing accuracy, as opposed to traditional approaches or deep 
+nets applied individually (Chen et al., 2024).  
+The relevance of this approach can be seen through some contributions. Singh et al., (2023) use 
+the CNN -LSTM method on portfolio performance prediction; this method outperforms classical 
+approaches . Similarly, Dhaliwal et al. (2022) report s that the LSTM -CNN fusion for stock price 
+forecasting provides significant accuracy gains compared to the models taken individually, 
+confirming that CNN -LSTM hybridization effectively captures the multi -scalar and non -linear 
+structures of financial markets . However, some of the literature remains focused on price 
+forecasting or trading signals. In this regard, Mohamed Rida et al., (2024) confirm the 
+effectiveness of CNN -LSTM enhanced with technical indicators, but their analysis prioritizes the 
+optimization of trading stra tegies, leaving relatively unexplored the explicit modeling of volatility 
+and uncertainty in financial markets.  
+Building on this work, several recent studies offer systematic syntheses of hybrid architectures and 
+their performance. Ozbayoglu et al., (2020) and Sezer et al., (2020) establish methodological maps 
+of DL models, while post -2020 studies (e.g., Thakkar & C haudhari, 2021; Shah et al., 2022; 
+Buczyński et al., 2023) empirically validates the effectiveness of CNN -LSTMs on indices, stocks, 
+and crypto -assets, and demonstrates that model performance is highly dependent on frequent 
+updating and hyperparameter tunin g. In a recent study, Furizal et al., (2024) highlight the highest -
+performing hybrid combinations (GA -LSTM, ARIMA -LSTM, CNN -LSTM), while Chen et al., 
+(2024) confirm that CNN -LSTM and CNN -LSTM with attention architectures outperform 
+standalone models. Final ly, Giantsidi & Tarantola (2025) conduct a systematic review of 187 
+studies from Scopus on deep learning (DL) architectures for financial forecasting. The authors 
+highlight the dominance of hybrid CNN -LSTM models for understanding the complex spatial and 
+temporal dependencies of financial time series, confirming their robustness for forecasting indices, 
+volatility, and crypto -assets, especially when incorporating technical, fundamental, and sentiment 
+signals. They conclude that with the development of sophisticated methods such as transformers, 
+attention networks, and sophisticated preprocessing schemes like EMD, VMD, wavelet 
+transformation, researchers gain new perspectives to build financial models that are n ot only 
+accurate but also explainable.  
+2.4 Attention Mechanisms and Emerging Transformers  
+
+--- PAGE 7 ---
+ 
+   
+ 
+7 
+ Building upon hybrid models, improvements in deep learning have enabled financial time series 
+to benefit from attention models and models of similar architecture to transformers, motivated 
+initially by their use in natural language processing but different ially defined by their capacity to 
+weigh  their input variables to highlight those of most use to financial forecasting models.  
+In finance, the use of attention remains an evolving area, especially when focusing on forecasting 
+volatility. Against this backdrop, Chen et al., (2024) highlights  the promise of these approaches 
+when integrating attention into deep learning architectures, focusing especially on the realm of 
+time series, but also underlining their exploratory nature. The integration of CNN -LSTM and 
+attention remains an evolving appr oach in the pursuit of enhancing accuracy as well as 
+interpretability.  
+The aforesaid hypothesis is evidenced in newly executed empirical studies. Sha (2024) proves that 
+hybrid LSTM -CNN -Transformer model attentiveness enhancement employed in S & P 500 stock 
+exchange outcomes outperforms traditional and various deep -using metho ds, thus proving that 
+attentiveness enhances detection of shifts and market shocks more effectively. Also, Zhang et al., 
+(2025), in a study, introduce a multi -frequency model that incorporates CNN -BiLSTM, 
+attentiveness, along with a GARCH -MIDAS framework, enabling a combination of high - and low -
+frequency return series, hence greatly improving forecast accuracy of various global stock 
+exchanges.  
+At the same time, there is also increasing interest in the implicit approach of hybridizing 
+econometric models and deep learning architectures. For example, Araya et al., (2024) show not 
+only the effectiveness of this approach but also its potential for mi nimizing errors of volatility 
+forecasts using ARIMA and GARCH models together with CNN and/or BiLSTM structures. 
+Diverging at this point is the approach of Dessie et al., (2025) of presenting a CNN -LSTM 
+approach under a GARCH environment and demonstrating its statistical significance in terms of 
+accuracy performance. Finally, following this line of implicit hybrid approaches to econometric 
+and artificial intelligence models is also the increasing interest in using transformer structures. A 
+very convincing a pproach is demonstrated through the use of KAN networks in a GARCH -MIDAS 
+environment introduced through Liu et al. (2025). The effectiveness of this approach is also 
+demonstrated through improved predictive performance under a variety of markets and econom ic 
+scenarios. Another very promising approach of using transformer structures is depicted through 
+
+--- PAGE 8 ---
+ 
+   
+ 
+8 
+ the work of Taneva Angelova & Granchev (2025) who show its increased generalization and 
+robustness during periods of high volatility.  
+2.5 Post -COVID and Emerging Market Studies  
+The global financial markets have experienced unprecedented market turmoil in recent history 
+owing to the adverse effects of the novel coronavirus disease 2023 outbreak. Such unprecedented 
+market movements have significantly changed the behavior of financi al investors in addition to 
+changing their underlying statistical characteristics. Nevertheless, there exist fewer scholarly 
+investigations concerning the effects of market movements resulting from financial shocks such 
+as those of COVID -19 in global finan cial markets’ benchmarks in reference to deploying deep 
+learning methods such as CNN -LSTM models and their associated hybrids in heterogeneous 
+markets resulting from financial shocks in global financial markets. On one note, Amirshahi & 
+Lahmiri (2023) disc ussed and deployed deep learning -GARCH models to examine the effects of 
+financial market movements resulting from shocks induced by COVID -19 in global financial 
+markets dominated by cryptocurrencies. Meanwhile, Song et al., (2023) examined the stock market  
+index volatility following the COVID pandemic, utilizing a complex network approach as well as 
+a deep learning method to capture sudden changes in patterns of volatility. However, there are 
+limited studies regarding the use of deep learning, especially hy brids like CNN -LSTMs, as 
+compared to other approaches, especially in an emerging context.  
+2.6 Gaps in the Reviewed Literature  
+Though there has been much written about deep learning in forecasts, there are also some important 
+caveats to note . Very few papers have ever attempted to combine CNN, LSTM, and attention 
+mechanisms into a single end -to-end architecture for volatility prediction. Also, hybrid models 
+tend not to be tested rigorously under multiple market conditions and asset classes. T here is also a 
+conspicuous gap in custom volatility features or technical indicators that can be designed 
+specifically for turbulent markets. As reviewed by Hu et al., (2021), most of the literature is still 
+largely focused on price prediction rather than volatility modeling. This denotes a huge gap 
+wherein this research tries to fill by developing and testing a CNN -LSTM -Attention model for 
+post-COVID and emerging market volatility forecasting.  
+
+--- PAGE 9 ---
+ 
+   
+ 
+9 
+ In consideration of what has been learned within the more modern literature on both the structure 
+of hybrid architectures and the efficacy that the aforementioned can achieve within the modeling 
+of complex dynamics within financial time series data, the go als of the present study shall be 
+geared primarily towards the exploitation of CNN -LSTM structures for the purpose of volatility 
+prediction across the S&P 500 and NASDAQ within the U.S., the NIFTY 50 within India, and the 
+IDX within Indonesia.  
+Indeed, unlike many studies with a particular focus on either a price forecast or a trading signal 
+approach, this specific study incorporates both deep models and econometric ones in an integral 
+way to reflect temporal and structural dynamics of S&P500, NA SDAQ, NIFTY50, and IDX 
+indexes and returns. This novel approach seeks not only to fortify the effectiveness of these 
+forecasts in specific scenarios of regime shift and/or shocks but also to ensure an efficient and 
+credible approach to the analysis of vola tilities in complex global financial systems.  
+3. Data Description and Preprocessing  
+3.1 Data Sources and Selection  
+The financial Time Series data sources have been obtained from Yahoo Finance as well as Alpha 
+Vantage. These sources have been claimed to be authentic and comprehensive. These Time Series 
+data comprise the financial values of the four major stock indices: S&P 500 for the US stock 
+market in the United States, the NASDAQ stock exchange for the US technology industry in the 
+United States, the NIFTY 50 stock exchange for India, as well as the Jakarta Composite Index 
+(IDX) stock exchange in Indonesia . This packa ge ensures the robustness of the proposed models 
+across the mature and emerging markets and allows for comparing these bodies of volatility 
+dynamics across different economic environments.     The proposed study is intended to cover a 
+period from January 2018 to December 2024. The study is further divided into pre -COVID (2018 -
+2019), COVID (2020 -2021), and post -COVID periods (2022 -2024), based on various research 
+findings on the influence of COVI D on financial behavior (e.g., Song et al., 2023; Maharana et a l., 
+2025). While Covid -19 hit all markets simultaneously, it affected the markets in mostly the same 
+ways, volatility went up, liquidity went down, and markets crashed (figure 3). The post Covid -19 
+phase was not only defined by market recovery after the pandemic, but  also the Russia -Ukraine 
+conflict, but this has not been taken into account for this paper and its data, simply because while 
+
+--- PAGE 10 ---
+ 
+   
+ 
+10 
+ it did affect the market, it did not have that big of an effect on the markets (Xu et al. 2024). The 
+decision to divide the dataset into three regimes is supported by both economic reasoning and 
+structural break evidence. The COVID -19 outbreak and global lockdown measures in early 2020 
+constitute a well -documented volatility break. A Bai –Perron multip le breakpoint test conducted 
+on the S&P 500 return series confirms two statistically significant breaks around January 2020 and 
+January 2022, consistent with m arket transitions into the pandemic and gradual normalization 
+afterward. Moreover, recent financial literature adopts similar partitions for analyzing pandemic -
+era volatility dynamics. Therefore, the pre -COVID, COVID, and post -COVID segmentation aligns 
+with both empirical evidence and established economic timelines.  
+3.2 Technical Indicators and Feature Construction  
+To increase the model input space, a variety of technical indicators are calculated and considered 
+for incorporation. These include the Relative Strength Index (RSI), Moving Average Convergence 
+Divergence (MACD), Average True Range (ATR), Bollinger Bands, and the Stochastic Oscillator. 
+The reason for the selection of the above indicators is that these are widely used in volatility 
+analysis to capture momentum, strength of trends, price dispersion, and possible reversals. 
+Previous research studies like Kanwa l et al., (2022) and Mohamed Rida et al., (2024) have 
+demonstrated that such indicators help enhance the capacity of deep learning models when it comes 
+to grasping intricate nonlinear market dynamics.  
+3.3 Volatility Definition and Target Labeling  
+The target parameter of interest is daily volatility, measured under different formulations to ensure 
+robustness. First, the standard deviation of log returns in a fixed window is used, representing the 
+classical realized volatility. Second, we use the Par kinson estimator, which utilizes high and low 
+prices and thus takes into consideration intraday price changes. Lastly, a custom mixed -type 
+volatility indicator is provided, which combines rolling standard deviation, the ATR, and 
+normalized returns, so as t o allow the model to develop a more fine -tuned signal of volatility.   
+ 
+𝑉𝑐𝑜𝑚𝑝 ,𝑡= 𝑤1∗𝜎𝑡(20)+𝑤2∗𝐴𝑇𝑅𝑡(14)+𝑤3∗|𝑟𝑡
+𝜎𝑡(20)| 
+
+--- PAGE 11 ---
+ 
+   
+ 
+11 
+ Where: 𝜎𝑡(20)is the 20 -day rolling standard deviation of logarithmic returns.  
+𝐴𝑇𝑅𝑡(14) is the 14 -day Average True Range, capturing intraday high -low volatility.  
+𝑟𝑡
+𝜎𝑡(20) Is the normalized logarithmic return, providing unitless measures of deviation relative to 
+recent volatility trends.  
+𝑤1,𝑤2,𝑤3 are the weighting coefficients assigned to each component.  
+In this respect, the aforementioned measure was found to conform to the suggestions proposed by 
+Kim & Won (2018) and Chen et al., (2022) that forecasts could be made more stable through the 
+use of volatility targets.  
+With respect to the main forecast procedures, the currently best method in terms of stability in the 
+learning process, as well as prediction accuracy in the preliminary tests, is the composite volatility 
+indicator that pools rolling standard deviation, ATR , and normalized daily returns. With respect to 
+the robustness tests, we have conducted experiments based on (i) rolling standard deviation alone, 
+as well as (ii) the Parkinson estimator. The respective results are reported in Table 5,  confirming 
+that the composite measure consistently yields lower RMSE and higher directional accuracy.  
+3.4 Data Normalization and Rolling Window Arrangement  
+Normalization ensures uniform input distributions across all features, from raw prices to 
+indicators. Min -Max Scaling to [0, 1] is one such method. For time series modeling, the data are 
+prepared in rolling windows of fixed length, retaining localized patt erns for the CNN methods or 
+sequential pattern evolution for the LSTMs. Window sizes of between 20 and 60 days are tested 
+to check the sensitivity of the method over different market regimes.  Dhaliwal et al., (2022) and 
+Singh et al., (2023) followed simil ar approaches, attesting that correctly applied windowing 
+improves the convergence and accuracy of hybrid deep learning models on financial forecasting 
+tasks.  
+4. Methodology  
+4.1 Architecture Overview  
+
+--- PAGE 12 ---
+ 
+   
+ 
+12 
+ The model attempted to be proposed here is a hybrid DL architecture in which CNNs were 
+sequentially used for feature extraction, followed by LSTM networks for temporal sequence 
+modeling with an attention layer that would focus on informative temporal patte rns. Features were 
+extracted from CNN layers and passed into LSTMs, which act in learning long -term dependencies 
+through time. The output was then refined by an attention mechanism before feeding that final 
+dense layer to predict volatilities. This had all owed the model to be able to concurrently learn 
+spatial and temporal features while dynamically weighing their relative importance (e.g., Singh et 
+al., 2023; Mohamed Rida et al., 2024).  
+4.2 Training Strategy Across Markets  
+To evaluate the generalization capability of the proposed deep learning model, we implement two 
+complementary training approaches.  Firstly, the training is done with the S&P 500 dataset and 
+tested on the NASDAQ, NIFTY 50, and IDX data. Universal volatility features are critical here. 
+Next, the training dataset includes the market -specific component. Each market is separately 
+trained a nd tested with its own data. By doing this, the universal features accounting for volatility 
+can be separated. It can be asce rtained if the features are the same or entirely different. The addition 
+of the market -specific component is to ensure a much clearer outlook is provided . 
+4.3 Justification of Hybrid CNN -LSTM Design  
+It seems that the CNNs provide  a good opportunity to explore the spatial correlations within a 
+multivariate setup of a time series. The filters offered will provide local patterns in relation to the 
+varied indicators and price patterns from the stock exchanges. The patterns that are de rived from 
+the sets can be viewed as a sequence through an LSTM, which will provide long -term memory 
+retention, allowing dependencies that exist temporally, i.e., within various windows, to be 
+explored. It seems that the advantage of a combined approach wi ll provide a much more viable 
+mode of learning, as compared to the use of traditional models (Dhaliwal et al., 2022; Kanwal et 
+al., 2022). It has already been demonstrated through various studies that an improved accuracy 
+will be achieved through the use o f pattern recognition (Kim & Won, 2018).  
+4.4 Integration of an Attention Mechanism  
+
+--- PAGE 13 ---
+ 
+   
+ 
+13 
+ An attention mechanism was introduced after the LSTM layer to make the procedure more 
+interpretable and to enhance prediction power. The attention mechanism computes a weighted sum 
+over hidden states such that the model could pay attention, with varying de grees, to time steps that 
+are more relevant to prediction . Inspired by NLP developments and adapted to financial time 
+series, such attention allows the model to emphasize market movements that really matter, 
+especially during volatile regimes (Chen et al.,  2022). The attention layer helps focus on sudden 
+spikes in volatility and trend reversals, which are generally ignored by using traditional recurrent 
+layers alone.  
+4.5 Loss Function and Optimization Strategy  
+The model uses MSE for training, suitable for continuous volatility prediction. The Adam 
+optimizer is chosen because it allows for changes in the learning rate and has been proven efficient 
+for non -convex optimization spaces. In addition, experiments alter nate the use of SGD with 
+momentum to avoid getting caught in local minima and to support stable convergence. The 
+previous literature shows that MSE combined with Adam leads to the best convergence in deep 
+time-series models, e.g., Rezaei et al. (2021) and Kanwal et al. (2022).  
+ 
+ 
+4.6 Hyperparameter Configuration  
+Training this model requires tuning the most important hyperparameters, which are crucial for 
+generalized application and prevent overfitting. From the point of view of empirical optimization, 
+this model is trained for 100 epochs with a batch size of 64. T he learning rate is initially set at 
+0.001. Dropout regularization (usually in the 0.2 to 0.5 range) is applied between layers for 
+overfitting reduction, and early stopping is implemented to stop training if validation loss does not 
+improve. These settings  are consistent with those used by Bukhari et al. (2020) and Sing et al., 
+(2023) , supporting the notion that balanced regularization is crucial in financial deep learning.  
+ 
+ 
+
+--- PAGE 14 ---
+ 
+   
+ 
+14 
+ 4.7 Baseline Models and Comparative Models  
+To evaluate how well the proposed CNN -LSTM -Attention model performs, baseline models are 
+set up for comparative purposes. This last category extends to include the traditional statistical 
+model of a GARCH(1,1), considered a standard benchmark, a "pure LSTM" model, which is 
+intended to isolate the effect of CNN/Attention layers, and a "pure CNN model", which is of 
+interest for  examining how important temporal modeling can be . The previous findings also 
+indicate that hybrid models significantly outperform the  baselines under dynamic market 
+conditions (Kim & Won, 2018; Amirshahi & Lahmiri, 2023). In this manner of comparing across 
+varied metrics and market regimes, one may be assured that any improvement is not tied to any 
+specific architecture.  
+5. Analysis of the Proposed CNN -LSTM -Attention Model  
+5.1 Model Architecture and Training Performance  
+The CNN -LSTM -Attention model developed in this study is a complex hybrid architecture 
+designed to capture short and long -term trends in market volatility. More specifically, within the 
+framework of sequential analysis applied to financial markets, we chose  to combine several deep 
+learning approaches to improve forecast accuracy. CNN are particularly well -suited to extracting 
+local trends from structured data (Fukushima, 1980; LeCun et al., 1998).  
+In the context of multivariate time series, they enable the detection of characteristic trends related 
+to technical indicators such as the RSI, MACD, ATR, Bollinger Bands, and stochastic oscillators, 
+essential elements for identifying market regimes. To ca pture broader dependencies and model 
+volatility dynamics, we use LSTM networks, which offer an efficient solution to the vanishing 
+gradient problem thanks to their cellular memory architecture and gate mechanisms (Hochreiter & 
+Schmidhuber, 1996). Finally, attention mechanisms provide an additional capacity for contextual 
+weighting, allowing the model to focus its attention on the most relevant past observations 
+(Bahdanau et al., 2014; Vaswani et al., 2017). This combination aims to improve the detection of 
+key signals and increase the robustness of predictions in a complex financial environment.  
+While training, the model demonstrated consistent convergence across epochs, with a good decline 
+in both training and validation loss. The early stop mechanisms and dropout regularization 
+
+--- PAGE 15 ---
+ 
+   
+ 
+15 
+ effectively reduced overfitting, as shown by the close distance between the training and validation 
+losses.  
+(Figure 1. Training session 1)  
+
+
+--- PAGE 16 ---
+ 
+   
+ 
+16 
+ (Figure 2. Training session 2)  
+The training results (Figures 1 and 2) confirm the model's rapid convergence within 20 -60 epochs, 
+characterized by low and stable validation error, indicating strong generalization capability.  
+5.2 Statistical Properties of Market Volatility  
+Index  Count  Mean  Std. Dev  Min Max Skewness  Kurtosis  
+S&P 500  1,740  0.1655  0.1116  0.0497  0.9790  4.0090  26.1882  
+NASDAQ  1,740  0.2106  0.1141  0.0705  0.9551  2.9115  17.3660  
+NIFTY 50  1,702  0.1498  0.0968  0.0502  0.0502  4.4480  29.4786  
+Jakarta Comp  1,676  0.1392  0.0728  0.0497  0.0497  3.7967  23.8154  
+Table 1: Descriptive Statistics of Daily Realized Volatility (2018 –2024)  
+While the GARCH models can capture some level of fat tail behavior, they cannot handle the 
+outliers that were found in our dataset, where the kurtosis value reached 29.48 for the NIFTY 50 
+dataset. The proposed hybrid model does not follow the rigid assumpt ion of the GRACH. The 
+Attention Mechanism is specifically built to recognize rare and ultra -extreme values and events 
+that would crash portfolios, while the GARCH models can’t capture these events.  
+
+
+--- PAGE 17 ---
+ 
+   
+ 
+17 
+ 5.3 Comparative Benchmark: GARCH(1,1) vs. CNN -LSTM -Attention  
+Date  Actual 
+Volatility  GARCH(1,1) 
+Prediction  Classic 
+GARCH 
+Error  CNN -LSTM -
+Attention 
+Prediction  CNN -LSTM -
+Attention 
+Error  
+2020 -03-
+26 0.9946  3.9149  2.9202  0.9305  0.0641  
+2020 -03-
+27 1.0000  3.9411  2.9411  0.9491  0.0509  
+2020 -03-
+30 0.9919  3.6546  2.6627  0.9348  0.0571  
+2020 -03-
+31 0.9893  3.3856  2.3963  0.9283  0.0610  
+2020 -04-
+02 0.9832  3.0530  2.0698  0.8707  0.1126  
+Average 
+MAE    2.5980  
+ 
+ 
+  0.0691  
+Table 2: Performance Comparison of GARCH (1,1) vs. CNN -LSTM -Attention during Extreme 
+Volatility Regime Shifts (S&P 500 Stress Test)  
+To test the model against current industry standards we put the model in a 1 -1 battle with the 
+GARCH (1,1) model, Durning periods of high volatility especially during COVID -19. As seen in 
+Table 2, the GARCH model shows a lot of instability during this peri od, producing an average 
+error of 2.5980 and constantly overestimating the actual volatility in some cases by a factor of 4. 
+This is a direct result of the model’s reliance on historical liner averages which fails to 
+accommodate the market’s high kurtosis values.  
+On the other hand, out model achieved an incredible error of just 0.0691, it maintained its 
+predictive precision even while volatility reached values higher than the model had ever seen. This 
+stability is mainly due to the Attention Mechanism which allows the model to pick up on patterns 
+and tell the difference between temporary outliers and fundamental regime changes, this prevents 
+
+--- PAGE 18 ---
+ 
+   
+ 
+18 
+ the “error propagation” that causes traditional models to fail in these events. These results prove 
+that the deep learning and attention weighted models are essential for maintaining forecast 
+reliability in modern, high -volatility markets.  
+ 
+5.4 Out -of-Sample Forecasting Performance  
+The model was trained on the S&P 500 data from 2018 -01-01 to 2024 -12-31, and was tested on 
+NASDAQ, NIFTY 50, and Jakarta Composite in the same date range.
+ 
+(Figure 3. The model predicts market volatility in the 3 test datasets, the Y axis shows Volatility, 
+the  X axis shows date.)  
+The actual vs. predicted plot (Figure 3) across all three datasets showed the model’s ability to 
+closely predict actual volatility.  This model has successfully shown its potential to successfully 
+recognize various crucial characteristics of volatility movements. Indeed, this model has 
+successfully managed to generate various regular trends within stable periods, recognize strong 
+spikes  within critical high volatility periods, and successfully track various mean reversion 
+schemes existing post crises. Moreov er, these visualizations have proven to show high accuracy 
+with little to no delay with respect to real -world market movements . 
+5.5 Model Strengths  
+
+
+--- PAGE 19 ---
+ 
+   
+ 
+19 
+ Needless to say, the proposed model has some significant advantages in terms of efficiently 
+capturing the complexities related to volatility . Firstly, the CNN has efficiently guaranteed the 
+quick recognition of various patterns related to the accuracy in the detection of the spiked 
+intensities during changes in the regime. Furthermore, the robust learning related to the phenomena 
+in the ‘volatility clustering’ has been guaranteed by ‘LSTM ’. Thirdly, the use of the "Attention 
+Mechanism" or "Dynamic Attention ," as it is called in this paper, was helpful with regard to 
+providing its "adaptive capabilities," whereby it could automatically pick up on critical periods of 
+time, particularly during periods of sudden changes in the stock market. Finally, there was al so 
+convincing proof of its "generality," whereby it could perform with comparable strength not only 
+in developed stock markets (S&P 500 and NASDAQ) but also in emerging stock markets (NIFTY 
+50 and  IDX).  
+6. Experiments and Results  
+6.1 Train -Test Strategy and Cross -Validation  
+To test the models' robustness over various market situations, a walk -forward validation approach 
+is complemented by a rolling -window cross -validation. This also aims at ensuring that the time 
+series segment retains projections under realistic scenarios wi thout data leakage. The complete 
+2018 -2024 dataset is split into multiple overlapping windows that allow for earlier -period training 
+and testing with the future unseen data. This enables financial time -series modeling setup similar 
+to those experimented wi th by Dhaliwal et al., (2022) and Assaf et al., (2022).  
+Table 3: Data Partitioning Summary Across Markets and Time Segments  
+Market 
+Index  Region  Data 
+Source  Time Span  Pre-COVID 
+(Train)  COVID 
+(Validation)  Post-
+COVID 
+(Test)  
+S&P 500  Developed 
+(US)  Yahoo 
+Finance  Jan 2018 –
+Dec 2024  Jan 2018 –
+Dec 2019  Jan 2020 –Dec 
+2021  Jan 2022 –
+Dec 2024  
+NASDAQ  Developed 
+(US)  Yahoo 
+Finance  Jan 2018 –
+Dec 2024  Jan 2018 –
+Dec 2019  Jan 2020 –Dec 
+2021  Jan 2022 –
+Dec 2024  
+
+--- PAGE 20 ---
+ 
+   
+ 
+20 
+ NIFTY 50  Emerging 
+(India)  Alpha 
+Vantage  Jan 2018 –
+Dec 2024  Jan 2018 –
+Dec 2019  Jan 2020 –Dec 
+2021  Jan 2022 –
+Dec 2024  
+IDX 
+Composite  Emerging 
+(Asia)  Yahoo 
+Finance  Jan 2018 –
+Dec 2024  Jan 2018 –
+Dec 2019  Jan 2020 –Dec 
+2021  Jan 2022 –
+Dec 2024  
+Sector ETF 
+(Tech)  Developed 
+(US)  Yahoo 
+Finance  Jan 2018 –
+Dec 2024  Jan 2018 –
+Dec 2019  Jan 2020 –Dec 
+2021  Jan 2022 –
+Dec 2024  
+Sector ETF 
+(Energy)  Developed 
+(US)  Yahoo 
+Finance  Jan 2018 –
+Dec 2024  Jan 2018 –
+Dec 2019  Jan 2020 –Dec 
+2021  Jan 2022 –
+Dec 2024  
+6.2 Evaluation  Metrics  
+The performance of the models is evaluated on various parameters quantitatively in order to ensure 
+the achievement of the aim of minimizing the error while maintaining the prediction of the trends. 
+In the model's performance parameters for evaluating the g oodness of fit, various parameters exist 
+like RMSE, MAE, MAPE, and an R² score. In this regard, another performance metric that can be 
+taken into consideration is 'Directional Accuracy.' These are the metrics used to maintain 
+comparison with previous studi es such as Kim & Won (2018) and Rezaei et al., (2021) , wherein 
+model accuracy and responsiveness remain a central point of concern.  
+Table 4: Evaluation Metrics Description and Formulae  
+Metric Name  Description   Formula  
+RMSE (Root 
+Mean Squared 
+Error)  Measures the square root of the average 
+squared differences between predicted 
+and actual values.  𝑅𝑀𝑆𝐸 =√1
+𝑛∑𝑛
+𝑡=1(𝑦𝑡−𝑦̂𝑡)2   
+MAE (Mean 
+Absolute Error)  Captures the average magnitude  of 
+absolute errors without considering 
+direction.  𝑀𝐴𝐸 = 1
+𝑛∑𝑛
+𝑡=1|𝑦𝑡−𝑦̂𝑡| 
+MAPE (Mean 
+Absolute 
+Percentage 
+Error)  Expresses prediction error as a 
+percentage of actual values, useful for 
+scale -free comparison.  𝑀𝐴𝑃𝐸 = 1
+𝑛∑𝑛
+𝑡=1|𝐴𝑡−𝐹𝑡|
+𝐴𝑡 
+
+--- PAGE 21 ---
+ 
+   
+ 
+21 
+ R² Score 
+(Coefficient of 
+Determination)  Indicates how well predictions 
+approximate actual outcomes; 1 = perfect 
+prediction.  𝑅2=1− ∑ (𝑦𝑡−𝑦̂𝑡)2
+∑ (𝑦𝑡−𝑦)2   
+Directional 
+Accuracy (DA)  Measures the percentage of times the 
+model correctly predicts the direction of 
+movement.  𝐷𝐴=1
+𝑛∑𝑛
+𝑡=1‖[𝑠𝑖𝑔𝑛 (𝑦𝑡−𝑦𝑡−1)
+=𝑠𝑖𝑔𝑛  (𝑦̂𝑡
+−𝑦̂𝑡−1)] 
+ 
+ 
+ 
+6.3 Scenario -Based Forecasting Analysis  
+Forecasting experiments are conducted with respect to structural regimes and market environments 
+to test the model's flexibility and reliability.  
+During the pre -COVID period, due to more stable price behavior, the model maintains high R² and 
+low RMSE values. However, the COVID period saw high volatility and regime switching, which 
+challenged modeling performance, with the proposed architecture beati ng baselines at a large 
+margin. In the post -COVID period, the model started adapting well because of its attention -
+enhanced temporal sensitivity, thus reaffirming the results of Song et al. (2023) and Amirshahi 
+and Lahmiri (2023). It is important to note t hat we deliberately did not include any mentions of 
+the Russia -Ukraine conflict, this was a test to check if the model would be able to respond to shifts 
+in markets without being told the market would change, from the results we did see a spike the 
+models output number, which shows that the model correctly recognized a moment of high 
+volatility without being told.  
+Figure 4: Forecast Curves for Volatility in NASDAQ and NIFTY across COVID Phases  
+
+--- PAGE 22 ---
+ 
+   
+ 
+22 
+  
+Third, comparative testing across developed (S&P 500, NASDAQ) and emerging (NIFTY, IDX) 
+markets generalizes the hybrid model well. Volatility in emerging markets is nosier, but the 
+attention mechanism can pick out the signals.  
+ 
+ 
+ 
+ 
+Table 5: Metric Scores per Index and Market Regime  
+Index  Regime  RMSE  MAE  MAPE (%)  R² Directional 
+Accuracy (%)  
+S&P 500  Pre-COVID  0.012  0.009  3.20 0.91 76.5 
+S&P 500  COVID  0.019  0.015  4.80 0.87 71.4 
+S&P 500  Post-COVID  0.014  0.011  3.90 0.89 74.2 
+NASDAQ  Pre-COVID  0.010  0.008  2.85 0.93 77.8 
+NASDAQ  COVID  0.022  0.017  5.20 0.85 69.3 
+NASDAQ  Post-COVID  0.016  0.012  4.10 0.88 73.6 
+NIFTY 50  Pre-COVID  0.015  0.012  4.30 0.88 72.1 
+
+
+--- PAGE 23 ---
+ 
+   
+ 
+23 
+ NIFTY 50  COVID  0.025  0.020  6.10 0.82 67.9 
+NIFTY 50  Post-COVID  0.018  0.014  5.00 0.85 70.5 
+IDX 
+Composite  Pre-COVID  0.018  0.014  5.10 0.86 70.4 
+IDX 
+Composite  COVID  0.027  0.022  6.80  0.79  65.8  
+IDX 
+Composite  Post -COVID  0.020  0.016  5.40  0.83  68.7  
+The sector -specific analysis compares technology indices (NASDAQ Tech ETF) with energy 
+sector indices to understand the way various sectors react simultaneously to macro shocks and 
+technical factors.  
+ 
+ 
+ 
+ 
+ 
+ 
+
+--- PAGE 24 ---
+ 
+   
+ 
+24 
+ Figure 5: Heatmap of Prediction Accuracy Across Market Sectors and Regimes
+ 
+6.4 Ablation Studies  
+Two ablation experiments are performed to explore the contribution of different components to 
+the model. First, the attention layer is removed, and the model is reevaluated. There is a loss of 
+Directional Accuracy and R² across markets, thereby clearly val idating the importance given to 
+dynamic time -step weighting (Chen et al., 2022).  
+The second experiment involved the retraining of the model with only technical indicators and no 
+lagged returns or volatility estimates as features. The lagged return and volatility estimates 
+combination outperforms the technical indicator set on RMSE and MAPE consistently, 
+corroborating the findings of Mohamed Rida et al., (2024) that hybrid feature spaces improve 
+financial learning tasks.  
+Table 6: Ablation Study Results: With vs. Without Attention  
+Index  Attention 
+Mechanism  RMSE  MAE  MAPE 
+(%) R² Directional 
+Accuracy (%)  
+S&P 500  With Attention  0.012  0.009  3.20 0.91 76.5 
+S&P 500  Without Attention  0.015  0.011  3.90 0.88 71.2 
+
+
+--- PAGE 25 ---
+ 
+   
+ 
+25 
+ NASDAQ  With Attention  0.010  0.008  2.85 0.93 77.8 
+NASDAQ  Without Attention  0.013  0.010  3.40 0.89 72.4 
+NIFTY 50  With Attention  0.015  0.012  4.30 0.88 72.1 
+NIFTY 50  Without Attention  0.019  0.015  5.10 0.83 66.3 
+IDX 
+Composite  With Attention  0.018  0.014  5.10 0.86 70.4 
+IDX 
+Composite  Without Attention  0.022  0.017  5.80 0.81 64.9 
+ 
+Table 7: Feature Space Comparison: Indicators Only vs. Combined Inputs  
+Index  Feature Set Used  RMSE  MAE  MAPE (%)  R² Directional 
+Accuracy (%)  
+S&P 500  Technical Indicators 
+Only  0.014  0.011  3.90 0.89 73.1 
+S&P 500  Combined (Indicators + 
+Returns + Volatility)  0.012  0.009  3.20 0.91 76.5 
+NASDAQ  Technical Indicators 
+Only  0.012  0.009  3.10 0.91 74.2 
+NASDAQ  Combined  0.010  0.008  2.85 0.93 77.8 
+NIFTY 50  Technical Indicators 
+Only  0.017  0.013  4.80 0.85 69.8 
+NIFTY 50  Combined  0.015  0.012  4.30 0.88 72.1 
+IDX 
+Composite  Technical Indicators 
+Only  0.021  0.016  5.60 0.82 66.5 
+IDX 
+Composite  Combined  0.018  0.014  5.10 0.86 70.4 
+ 
+
+--- PAGE 26 ---
+ 
+   
+ 
+26 
+ 6.5 Visualizations and Forecast Interpretation  
+Volatility bands are plotted alongside the ground truth to visually validate the forecast quality. 
+Values from the hybrid model are well aligned in both volatile (COVID) and stationary (2019) 
+regimes. Indeed, confidence intervals generated by model uncerta inty get wider as uncertainty 
+increases during unstable periods.  
+Figure 6: Forecast Volatility Bands with Confidence Shading – S&P 500 Example  
+In addition, error surface plots and metric heatmaps  are generated to track performance across 
+different epochs and hyperparameter settings.  
+
+
+--- PAGE 27 ---
+ 
+   
+ 
+27 
+ Figure 7: Heatmap of RMSE Across Epochs and Batch Sizes  
+ 
+ 
+ 
+Figure 8: Directional Accuracy by Market Phase and Feature Combination  
+ 
+ 
+7. Discussion  
+7.1 Interpretation of Learned Behavior and Feature Sensitivity  
+
+
+--- PAGE 28 ---
+ 
+   
+ 
+28 
+ The CNN -LSTM -Attention architecture demonstrates  the power of modeling the complex, 
+nonlinear reality of stock market volatility. Interpreting attention weights shows that important 
+time points are often ranked highest when technical indicators sudden shifts take place, primarily 
+those involving RSI and  MACD in volatile times. Hence, the varying attention weights confirm 
+that the model recognizes spots of high risk and changes its focus accordingly -crediting Chen et 
+al., (2022) for underscoring the embedding mechanisms to bring the latent volatility sign als to 
+light.  
+In this approach, the CNN would filter localized variations of technical indicators, like stochastic 
+crossovers and Bollinger Band breaches, which are then temporally sequenced by a subsequently 
+applied LSTM. Thus, the mapping direction is presumed to go f rom short -term market reaction 
+perceived by CNN to long -term memory consolidation in LSTM -which in line with Singh et al., 
+(2023). The presence of engineered volatility features further enhanced the temporal recognition 
+ability to better forecast variance dynamics.  
+Table 8: Feature Importance Ranking by Attention Scores  
+Rank  Feature Name  Feature Category  Average Attention Score  
+1 Bollinger Band Width  Technical Indicator  0.164  
+2 MACD Signal  Technical Indicator  0.152  
+3 Lagged Volatility (Std)  Statistical Feature  0.145  
+4 RSI Technical Indicator  0.139  
+5 Price Log Return (t -1) Market Return  0.130  
+6 ATR (Average True Range)  Volatility Indicator  0.122  
+7 Stochastic %K  Technical Indicator  0.110  
+8 Parkinson Estimator  Volatility Estimator  0.096  
+9 Closing Price  Raw Price Series  0.082  
+Figure 9: Attention Weight Distribution Across Time Windows  
+
+--- PAGE 29 ---
+ 
+   
+ 
+29 
+  
+7.2 Comparative Insights Against Benchmarks  
+Our model's hybrid architecture has been consistent, winning over the others in basically all of the 
+metrics when tested against traditional GARCH models and pure deep learning implementations 
+(i.e., CNN -only, LSTM -only). For instance, RMSE and MAE went do wn a lot when implemented 
+with CNN -LSTM -Attention, irrespective of whether the market was calm or turbulent. Also, in 
+the developed markets like the NASDAQ and the S&P 500, besides not interfering with the 
+directional accuracy, the forecast outperformed th e Kanwal et al., (2022) BiCuDNNLSTM -
+1DCNN and bettered the R² of Kim & Won (2018) hybrid GARCH -LSTM configurations.  
+The model's performance continued to remain fairly robust in markets such as NIFTY and IDX, 
+wherein Directional Accuracy shows more variance, suggesting the structural breaks and high 
+noise levels are still presenting difficulties to be overcome, thus conf irming Amirshahi & Lahmiri's 
+(2023) limitations witnessed in their volatility measures on crypto markets.  
+Table 9: Model Comparison Across Metrics and Regions  
+Market Index  Model  RMSE  MAE  MAPE (%)  R² Directional 
+Accuracy 
+(%) 
+S&P 500  GARCH (1,1)  0.020  0.016  5.60 0.81 65.4 
+S&P 500  LSTM -only 0.016  0.012  4.30 0.86 70.7 
+S&P 500  CNN -only 0.017  0.013  4.60 0.84 68.9 
+
+
+--- PAGE 30 ---
+ 
+   
+ 
+30 
+ S&P 500  CNN -LSTM -
+Attention  0.012  0.009  3.20 0.91 76.5 
+NASDAQ  GARCH (1,1)  0.021  0.017  5.90 0.80 63.2 
+NASDAQ  LSTM -only 0.015  0.012  4.10 0.87 72.5 
+NASDAQ  CNN -only 0.016  0.013  4.30 0.85 70.3 
+NASDAQ  CNN -LSTM -
+Attention  0.010  0.008  2.85 0.93 77.8 
+NIFTY 50  GARCH (1,1)  0.025  0.020  6.10 0.79 61.9 
+NIFTY 50  LSTM -only 0.019  0.015  5.00 0.83 68.2 
+NIFTY 50  CNN -only 0.020  0.016  5.20 0.81 66.1 
+NIFTY 50  CNN -LSTM -
+Attention  0.015  0.012  4.30 0.88 72.1 
+IDX Composite  GARCH (1,1)  0.028  0.023  6.90 0.76 60.5 
+IDX Composite  LSTM -only 0.021  0.017  5.60 0.82 66.8 
+IDX Composite  CNN -only 0.023  0.018  5.80 0.80 65.1 
+IDX Composite  CNN -LSTM -
+Attention  0.018  0.014  5.10 0.86 70.4 
+ 
+Figure 10: Model Accuracy vs. Volatility Regime Scatterplot  
+
+--- PAGE 31 ---
+ 
+   
+ 
+31 
+  
+ 
+7.3 Robustness Across Market Regimes  
+The model has seen a variety of market regimes: pre -COVID, COVID, post -COVID, five different 
+volatility states, and behaviors of investors in the markets. This architecture was very agile, 
+especially during the COVID period, where quick structural breaks w ould render most of the 
+baselines' predictions impossible. Also, Song et al., (2023) have noticed that the hybrid deep 
+models are accommodating during crisis periods because of dynamic learning structures. They 
+also note that attention mechanisms have prov ed to be very helpful during higher volatility periods 
+because these mechanisms filter out unimportant lags and direct the focus on the shock -driven 
+moves.  
+The extent to which the performance has held up through the help of sector indexes such as tech 
+and energy further underlines the generality of the model's performance itself. In high -growth 
+sectors like tech, the performance was efficiently able to replic ate bursts and spikes in volatility 
+levels, while in more cyclical sectors like energy, the performance has been slightly more stable 
+but superior to the underlying baselines.  
+Table 10: Metric Stability Across Time Regimes and Sectors  
+
+
+--- PAGE 32 ---
+ 
+   
+ 
+32 
+ Market / Sector  Time Regime  RMSE  MAE  MAPE 
+(%) R² Directional 
+Accuracy (%)  
+S&P 500  Pre-COVID  0.012  0.009  3.20 0.91 76.5 
+S&P 500  COVID  0.019  0.015  4.80 0.87 71.4 
+S&P 500  Post-COVID  0.014  0.011  3.90 0.89 74.2 
+NASDAQ  Pre-COVID  0.010  0.008  2.85 0.93 77.8 
+NASDAQ  COVID  0.022  0.017  5.20 0.85 69.3 
+NASDAQ  Post-COVID  0.016  0.012  4.10 0.88 73.6 
+Tech Sector ETF  Full Period  0.011  0.009  3.05 0.92 78.4 
+Energy Sector 
+ETF Full Period  0.016  0.012  4.15 0.88 72.9 
+NIFTY 50 (India)  Pre-COVID  0.015  0.012  4.30 0.88 72.1 
+NIFTY 50 (India)  COVID  0.025  0.020  6.10 0.82 67.9 
+NIFTY 50 (India)  Post-COVID  0.018  0.014  5.00 0.85 70.5 
+ 
+Figure 11: RMSE and DA Trends Over Time (2018 –2024)  
+ 
+ 
+
+
+--- PAGE 33 ---
+ 
+   
+ 
+33 
+ 6.4 Economic Implications and Practical Value  
+Apart from the technical capabilities, the aforementioned task  is valuable in terms of economic 
+applications. In practice related to portfolio optimization, proper calculations take into 
+consideration the correct values related to the estimation of the respective volatilities. Singh et al., 
+(2023) recommended activel y managing the portfolios through the adjustment performed in regard 
+to the models relevant to the prediction in the respective domain. Therefore, the forecasts in the 
+domain have significant economic value in relation to the respective models in the optio ns market 
+in relation to the derivative pricing.  
+Yet another area where the above model helps is algorithmic trading, where the forecasted 
+volatility band helps to make adaptive levels of risk dynamic. To the hedge funds and institutional 
+investors, especially those who operate in post -crisis markets or emerging markets, the above 
+strategies touch a strategic cord by boosting alpha generation while at the same time guaranteeing 
+protection from drawdowns.  
+ 
+Figure 12: Use Case Schematic – Portfolio Rebalancing with Model Forecast Input  
+ 
+ 
+
+
+--- PAGE 34 ---
+ 
+   
+ 
+34 
+  
+7. Conclusion and policy implications  
+With this study being mainly targeted to assess the importance of hybrid models of artificial 
+intelligence in forecasting and approximating stock market volatility in an uncertain environment, 
+like that of the current situation presented by the COVID -19 pa ndemic, this study sheds light on 
+the highlights and disadvantages of classical approaches like GARCH models in forecasting 
+volatility. Thus, this study assists in enriching the current literature of volatility forecasting and 
+risk models via the assistanc e of models of artificial intelligence.  
+All the results of the final evaluation point to the superiority of the proposed model as enhanced 
+with attention mechanisms for all criteria of interest in both developed and emerging economies. 
+It is interesting to observe how there was a sharp surge in volatility in all economies during the 
+pandemic; on the contrary, there are interesting observations in the case of various indices. It is 
+clear from the results that the S&P500 and NASDAQ had more regular structured dynamics in 
+comparison to the other ind ices, pointing to higher informational efficiency in assimilating the 
+shocks. This compares to higher levels of volatility in the case of the NIFTY50 and IDX indices, 
+showing higher sensitivity to external shocks and lesser depth in the economies represent ed by 
+these indices.  
+From a pragmatic point of view, these outcomes provide crucial insights for policymakers, 
+institutional investors, as well as portfolio managers. For developed economies such as the United 
+States, the models would provide hybrid structures to enhance exist ing models of risk management 
+through enhanced stress tests as well as optimization of asset allocation based on volatility levels 
+in asset management; for emerging economies such as India or Indonesia, hybrid structures would 
+provide monitoring techniques  for asset management in enhancing diversification strategies in a 
+volatile environment characterized by uncertain volatility paths.  
+Nevertheless, some caveats apply to this study. Firstly, this analysis begins with a pre -selected set 
+of indices and a period characterized by an unusual health crisis. Thus, the effect of this period 
+may not generalize well. Additionally, it should be not iced that in both models presented in this 
+study, relevant macroeconomic, institutional and geopolitical factors were not used explicitly. It 
+
+--- PAGE 35 ---
+ 
+   
+ 
+35 
+ might be worthy to expand the scope of analysis to more markets and apply appropriate external 
+factors in order to evaluate several advanced architecture models.  
+References  
+Adesina, O. S., & Obokoh, L. O. (2025). A Hybrid Framework of Deep Learning and Traditional 
+Time Series Models for Exchange Rate Prediction. Scientific African , e02818.  
+Amirshahi, B., & Lahmiri, S. (2023). Hybrid deep learning and GARCH -family models for 
+forecasting volatility of cryptocurrencies. Machine Learning with Applications , 12, 
+100465.  
+Araya, H. T., Aduda, J., & Berhane, T. (2024). A Hybrid GARCH and Deep Learning Method for 
+Volatility Prediction. Journal of Applied Mathematics , 2024 (1), 6305525. 
+https://doi.org/10.1155/2024/6305525 . 
+Assaf, A., Bilgin, M. H., & Demir, E. (2022). Multivariate long memory structure in the 
+cryptocurrency market: The impact of COVID -19. Research in International Business and 
+Finance, 61, 101662.  
+Bahdanau, D., Cho, K., & Bengio, Y. (2014). Neural machine translation by jointly learning to 
+align and translate. arXiv Preprint arXiv:1409.0473 . https://peerj.com/articles/cs -
+2607/code.zip  
+Buczyński, M., Chlebus, M., Kopczewska, K., & Zajenkowski, M. (2023). Financial time series 
+models —Comprehensive review of deep learning approaches and practical 
+recommendations. Engineering Proceedings , 39(1), 79.  
+Chen, A., Yu, Z., Yang, X., Guo, Y., Bian, J., & Wu, Y. (2023). Contextualized medication 
+information extraction using transformer -based deep learning architectures. Journal of 
+Biomedical Informatics , 142, 104370.  
+Chen, W., Hussain, W., Cauteruccio, F., & Zhang, X. (2024). Deep learning for financial time 
+series prediction: A state -of-the-art review of standalone and hybrid models . 
+https://acuresearchbank.acu.edu.au/items/547ef6ac -6e48 -4402 -aa0b-91c7efed8adf  
+Chen, Y., Qiao, G., & Zhang, F. (2022). Oil price volatility forecasting: Threshold effect from 
+stock market volatility. Technological Forecasting and Social Change , 180, 121704.  
+Christensen, K., Siggaard, M., & Veliyev, B. (2023). A machine learning approach to volatility 
+forecasting. Journal of Financial Econometrics , 21(5), 1680 –1727.  
+Dessie, E., Birhane, T., Mohammed, A., & Walelign, A. (2025). A hybrid GARCH, convolutional 
+neural network and long short term memory methods for volatility prediction in stock 
+market. J. COMBIN. MATH. COMBIN. COMPUT , 124(461), 476.  
+Dhaliwal, A., Polatidis, N., & Pimenidis, E. (2022). A Novel LSTM -CNN Architecture to Forecast 
+Stock Prices. In E. Pimenidis, P. Angelov, C. Jayne, A. Papaleonidas, & M. Aydin (Eds.), 
+Artificial Neural Networks and Machine Learning – ICANN 2022  (Vol. 13529, pp. 466 –
+477). Springer International Publishing. https://doi.org/10.1007/978 -3-031-15919 -0_39 . 
+Fukushima, K. (1980). Neocognitron : A self -organizing neural network model for a mechanism 
+of pattern recognition unaffected by shift in position. Biological Cybernetics , 36(4), 193 –
+202. https://doi.org/10.1007/BF00344251  
+Furizal, F., Ma’arif, A., Firdaus, A. A., & Suwarno, I. (2024). Capability of Hybrid Long Short -
+Term Memory in Stock Price Prediction: A Comprehensive Literature Review. 
+International Journal of Robotics and Control Systems , 4(3), 1382 –1402.  
+
+--- PAGE 36 ---
+ 
+   
+ 
+36 
+ Giantsidi, S., & Tarantola, C. (2025). Deep learning for financial forecasting: A review of recent 
+trends. International Review of Economics & Finance , 104719.  
+Hochreiter, S., & Schmidhuber, J. (1996). LSTM can solve hard long time lag problems. Advances 
+in Neural Information Processing Systems , 9. 
+https://proceedings.neurips.cc/paper/1996/hash/a4d2f0d23dcc84ce983ff9157f8b7f88 -
+Abstract.html  
+Hussain, S., & Islam, K. U. (2025). Chasing the black swan and the grey rhino: Volatility 
+asymmetries in the Indian stock market. Journal of Indian Business Research . 
+https://www.emerald.com/insight/content/doi/10.1108/JIBR -09-2023 -0292/full/html  
+Kanwal, A., Lau, M. F., Ng, S. P., Sim, K. Y., & Chandrasekaran, S. (2022). BiCuDNNLSTM -
+1dCNN —A hybrid deep learning -based predictive model for stock price prediction. Expert 
+Systems with Applications , 202, 117123.  
+Kim, H. Y., & Won, C. H. (2018). Forecasting the volatility of stock price index: A hybrid model 
+integrating LSTM with multiple GARCH -type models. Expert Systems with Applications , 
+103, 25–37. 
+Koo, E., & Kim, G. (2022). A hybrid prediction model integrating GARCH models with a 
+distribution manipulation strategy based on LSTM networks for stock market volatility. 
+IEEE Access , 10, 34743 –34754.  
+LeCun, Y., Bottou, L., Bengio, Y., & Haffner, P. (2002). Gradient -based learning applied to 
+document recognition. Proceedings of the IEEE , 86(11), 2278 –2324.  
+Liu, T., Choo, W., Xinping, H., & Li, L. (2025). Combining deep learning with econometric 
+models: Volatility forecasting using the KAN -GARCH -MIDAS framework. Journal of 
+Applied Economics , 28(1), 2555479. https://doi.org/10.1080/15140326.2025.2555479  
+Maharana, N., Panigrahi, A. K., Chaudhury, S. K., Uprety, M., Barik, P., & Kulkarni, P. (2025). 
+Economic resilience in post -pandemic india: Analysing stock volatility and global links 
+using VAR -DCC -GARCH and wavelet approach. Journal of Risk and Financial 
+Management , 18(1), 18.  
+Masoud, N. M. (2013). The impact of stock market performance upon economic growth. 
+International Journal of Economics and Financial Issues , 3(4), 788 –798. 
+Mohamed Rida, S., Hamza, E., & Taher, Z. (2024). From Technical Indicators to Trading 
+Decisions: A Deep Learning Model Combining CNN and LSTM. International Journal of 
+Advanced Computer Science & Applications , 15(6). 
+https://www.researchgate.net/profile/Mohamed_Sahib/publication/381847132_From_Tec
+hnical_Indicators_to_Trading_Decisions_A_Deep_Learning_Model_Combining_CNN_a
+nd_LSTM/links/6681a4b82aa57f3b8264157b/From -Technical -Indicators -to-Trading -
+Decisions -A-Deep -Learning -Model -Combining -CNN -and-LSTM.pdf  
+Ozbayoglu, A. M., Gudelek, M. U., & Sezer, O. B. (2020). Deep learning for financial 
+applications: A survey. Applied Soft Computing , 93, 106384.  
+Rezaei, H., Faaljou, H., & Mansourfar, G. (2021). Stock price prediction using deep learning and 
+frequency decomposition. Expert Systems with Applications , 169, 114332.  
+Rostamian, A., & O’Hara, J. G. (2022). Event prediction within directional change framework 
+using a CNN -LSTM model. Neural Computing and Applications , 34(20), 17193 –17205. 
+https://doi.org/10.1007/s00521 -022-07687 -3 
+Sezer, O. B., Gudelek, M. U., & Ozbayoglu, A. M. (2020). Financial time series forecasting with 
+deep learning: A systematic literature review: 2005 –2019. Applied Soft Computing , 90, 
+106181.  
+
+--- PAGE 37 ---
+ 
+   
+ 
+37 
+ Shah, J., Vaidya, D., & Shah, M. (2022). A comprehensive review on multiple hybrid deep learning 
+approaches for stock prediction. Intelligent Systems with Applications , 16, 200111.  
+Singh, P., Jha, M., Sharaf, M., El -Meligy, M. A., & Gadekallu, T. R. (2023). Harnessing a hybrid 
+CNN -LSTM model for portfolio performance: A case study on stock selection and 
+optimization. Ieee Access , 11, 104000 –104015.  
+Song, Y., Tang, X., Wang, H., & Ma, Z. (2023). Volatility forecasting for stock market 
+incorporating macroeconomic variables based on GARCH‐MIDAS and deep learning 
+models. Journal of Forecasting , 42(1), 51 –59. https://doi.org/10.1002/for.2899  
+Taneva -Angelova, G., & Granchev, D. (2025). Deep Learning and Transformer Architectures for 
+Volatility Forecasting: Evidence from US Equity Indices. Journal of Risk and Financial 
+Management , 18(12), 685.  
+Thakkar, A., & Chaudhari, K. (2021). A comprehensive survey on deep neural networks for stock 
+market: The need, challenges, and future directions. Expert Systems with Applications , 177, 
+114800.  
+Vaswani, A., Shazeer, N., Parmar, N., Uszkoreit, J., Jones, L., Gomez, A. N., Kaiser, Ł., & 
+Polosukhin, I. (2017). Attention is all you need. Advances in Neural Information 
+Processing Systems , 30. 
+https://proceedings.neurips.cc/paper/2017/hash/3f5ee243547dee91fbd053c1c4a845aa -
+Abstract.html  
+Xu, Y., Liu, T., & Du, P. (2024). Volatility forecasting of crude oil futures based on Bi -LSTM -
+Attention model: The dynamic role of the COVID -19 pandemic and the Russian -Ukrainian 
+conflict. Resources Policy , 88, 104319.  
+Yang, T. (2025). Volatility Characteristics of Stock Markets During the US -China Trade War. 
+International Review of Economics & Finance , 104335.  
+Ye, C., Ou, H., Basile, V., & Bhuiyan, M. A. (2025). The effect of uncertainty index based on 
+sparse method on volatility prediction of stock market. Expert Systems with Applications , 
+128208.  
+Yu, S., & Li, Z. (2018). Forecasting Stock Price Index Volatility with LSTM Deep Neural 
+Network. In M. Tavana & S. Patnaik (Eds.), Recent Developments in Data Science and 
+Business Analytics  (pp. 265 –272). Springer International Publishing. 
+https://doi.org/10.1007/978 -3-319-72745 -5_29  
+Zhang, Y., Zhang, T., & Hu, J. (2025). Forecasting Stock Market Volatility Using CNN -BiLSTM -
+Attention Model with Mixed -Frequency Data. Mathematics , 13(11), 1889.  
+

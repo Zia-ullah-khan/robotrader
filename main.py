@@ -5,7 +5,64 @@ from datetime import datetime
 from SMVF.predict import predict_next_hour_volatility
 from trade import place_order
 import json
+import os
 from utils import get_top_performing_stocks, get_latest_indicators
+
+# Path to trade history file for training data
+TRADE_HISTORY_FILE = 'trade_history.json'
+# Path to pipeline status file for UI monitoring
+PIPELINE_STATUS_FILE = 'pipeline_status.json'
+
+def load_trade_history():
+    """Load existing trade history from JSON file."""
+    if os.path.exists(TRADE_HISTORY_FILE):
+        try:
+            with open(TRADE_HISTORY_FILE, 'r') as f:
+                return json.load(f)
+        except (json.JSONDecodeError, IOError):
+            return []
+    return []
+
+def save_trade_history(history):
+    """Save trade history to JSON file."""
+    with open(TRADE_HISTORY_FILE, 'w') as f:
+        json.dump(history, f, indent=2, default=str)
+
+def update_pipeline_status(status_data):
+    """Update the pipeline status file for UI monitoring."""
+    try:
+        with open(PIPELINE_STATUS_FILE, 'w') as f:
+            json.dump(status_data, f, indent=2, default=str)
+    except Exception as e:
+        print(f"[WARNING] Could not update pipeline status: {e}")
+
+def log_trade_result(result, account_info, latest_indicators):
+    """Log a trade result to the history file for training."""
+    history = load_trade_history()
+    
+    # Create a comprehensive log entry
+    log_entry = {
+        "timestamp": datetime.now().isoformat(),
+        "symbol": result.get("symbol"),
+        "volatility": result.get("volatility"),
+        "decision": result.get("decision"),
+        "trade_data": result.get("trade_data"),
+        "success": result.get("success"),
+        "error": result.get("error"),
+        "latest_indicators": latest_indicators,
+        "account_snapshot": {
+            "available_balance": account_info.get("available_balance"),
+            "buying_power": account_info.get("buying_power"),
+            "equity": account_info.get("buying_power"),  # Using buying_power as equity proxy
+            "cash": account_info.get("available_balance"),
+            "status": account_info.get("status"),
+            "is_up": account_info.get("is_up")
+        }
+    }
+    
+    history.append(log_entry)
+    save_trade_history(history)
+    print(f"[LOG] Trade result saved to {TRADE_HISTORY_FILE}")
 
 def process_stock(symbol, account_info, start_date, end_date):
     """Process a single stock through the complete pipeline."""
@@ -85,7 +142,7 @@ def process_stock(symbol, account_info, start_date, end_date):
         print(f"Reason: {response_dict.get('reason', 'No reason provided')}")
         place_order(**trade_data)
         
-        return {
+        result = {
             "symbol": symbol,
             "volatility": volatility,
             "decision": response_dict,
@@ -93,9 +150,14 @@ def process_stock(symbol, account_info, start_date, end_date):
             "success": True
         }
         
+        # Log the trade result for training data
+        log_trade_result(result, account_info, latest_indicators)
+        
+        return result
+        
     except Exception as e:
         print(f"Error processing {symbol}: {e}")
-        return {
+        result = {
             "symbol": symbol,
             "volatility": None,
             "decision": None,
@@ -103,23 +165,93 @@ def process_stock(symbol, account_info, start_date, end_date):
             "success": False,
             "error": str(e)
         }
+        
+        # Log even failed trades for analysis
+        log_trade_result(result, account_info, {})
+        
+        return result
 
 if __name__ == "__main__":
     print("Fetching top performing stocks...")
+    
+    # Update status: starting
+    update_pipeline_status({
+        "status": "starting",
+        "message": "Fetching top performing stocks...",
+        "current_stock": None,
+        "progress": 0,
+        "total_stocks": 0,
+        "completed_stocks": [],
+        "last_update": datetime.now().isoformat()
+    })
+    
     STOCKS = get_top_performing_stocks(num_stocks=50, interval_minutes=10)
     if not STOCKS:
         print("No stocks to process. Market might be closed or no performing stocks found.")
+        update_pipeline_status({
+            "status": "idle",
+            "message": "No stocks to process. Market might be closed.",
+            "current_stock": None,
+            "progress": 100,
+            "total_stocks": 0,
+            "completed_stocks": [],
+            "last_update": datetime.now().isoformat()
+        })
         exit()
 
     start_date = "2020-01-01"
     end_date = datetime.now().strftime("%Y-%m-%d")
     account_info = get_account_info()
     print(f"Processing {len(STOCKS)} stocks: {', '.join(STOCKS)}")
+    
+    # Update status: running
+    update_pipeline_status({
+        "status": "running",
+        "message": f"Processing {len(STOCKS)} stocks",
+        "current_stock": None,
+        "progress": 0,
+        "total_stocks": len(STOCKS),
+        "completed_stocks": [],
+        "stocks_to_process": STOCKS,
+        "last_update": datetime.now().isoformat()
+    })
+    
     results = []
-    for stock in STOCKS:
+    completed_stocks = []
+    for i, stock in enumerate(STOCKS):
+        # Update status: processing stock
+        update_pipeline_status({
+            "status": "running",
+            "message": f"Processing {stock} ({i+1}/{len(STOCKS)})",
+            "current_stock": stock,
+            "progress": int((i / len(STOCKS)) * 100),
+            "total_stocks": len(STOCKS),
+            "completed_stocks": completed_stocks.copy(),
+            "stocks_to_process": STOCKS,
+            "last_update": datetime.now().isoformat()
+        })
+        
         result = process_stock(stock, account_info, start_date, end_date)
         results.append(result)
+        completed_stocks.append({
+            "symbol": stock,
+            "action": result.get("decision", {}).get("action") if result.get("decision") else None,
+            "success": result.get("success")
+        })
         print(f"Completed processing {stock}")
+        
+    # Update status: complete
+    update_pipeline_status({
+        "status": "complete",
+        "message": f"Completed processing {len(STOCKS)} stocks",
+        "current_stock": None,
+        "progress": 100,
+        "total_stocks": len(STOCKS),
+        "completed_stocks": completed_stocks,
+        "stocks_to_process": STOCKS,
+        "last_update": datetime.now().isoformat()
+    })
+    
     print("\n=== TRADING SUMMARY ===")
     successful_trades = 0
     failed_trades = 0

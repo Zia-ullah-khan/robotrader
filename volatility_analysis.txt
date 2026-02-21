@@ -1,0 +1,12 @@
+Descriptive Statistics Table for Daily Realized Volatility:
+            Index  Count   Mean  Standard Deviation    Min    Max  Skewness  Kurtosis
+          S&P 500   1740 0.1655              0.1116 0.0497 0.9790    4.0090   26.1882
+           NASDAQ   1740 0.2106              0.1141 0.0705 0.9551    2.9115   17.3660
+         NIFTY 50   1702 0.1498              0.0968 0.0502 0.9049    4.4480   29.4786
+Jakarta Composite   1676 0.1392              0.0728 0.0497 0.6715    3.7967   23.8154
+
+Kurtosis Analysis:
+- S&P 500: Kurtosis = 26.1882 (> 3). Distribution is Leptokurtic. High likelihood of extreme volatility events ('fat tails'). Justifies Attention Mechanism.
+- NASDAQ: Kurtosis = 17.3660 (> 3). Distribution is Leptokurtic. High likelihood of extreme volatility events ('fat tails'). Justifies Attention Mechanism.
+- NIFTY 50: Kurtosis = 29.4786 (> 3). Distribution is Leptokurtic. High likelihood of extreme volatility events ('fat tails'). Justifies Attention Mechanism.
+- Jakarta Composite: Kurtosis = 23.8154 (> 3). Distribution is Leptokurtic. High likelihood of extreme volatility events ('fat tails'). Justifies Attention Mechanism.
